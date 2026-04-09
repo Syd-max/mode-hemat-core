@@ -68,11 +68,6 @@ input,select,textarea{font-family:inherit;}
 
 .screen{display:flex;flex-direction:column;min-height:100dvh;width:100%;}
 
-.desktop-app-shell{display:contents;}
-@media(min-width:700px){
-  .desktop-app-shell{display:flex;flex-direction:column;}
-}
-
 /* Desktop card layout */
 @media(min-width:700px){
   body{
@@ -80,71 +75,14 @@ input,select,textarea{font-family:inherit;}
     padding:32px 16px 48px;
     background:linear-gradient(160deg,#c8e6ff 0%,#ddeeff 40%,#c8f5ec 100%);
   }
-
-  /* Wrapper card that holds screen + nav together */
-  .desktop-app-shell{
-    max-width:var(--app-width);width:100%;
+  .screen{
+    max-width:var(--app-width);width:100%;min-height:auto;
     border-radius:var(--r-xl);overflow:hidden;
     box-shadow:0 20px 80px rgba(26,39,68,0.15),0 4px 16px rgba(59,158,255,0.12);
     background:var(--bg);
-    display:flex;flex-direction:column;
-    min-height:780px;
-    max-height:calc(100vh - 64px);
   }
-
-  .screen{
-    max-width:100%;width:100%;min-height:auto;flex:1;
-    border-radius:0;overflow:hidden;
-    box-shadow:none;
-    background:var(--bg);
-  }
-
-  /* Dashboard screen needs to scroll inside the shell */
-  #section-dashboard{
-    min-height:0;overflow:hidden;
-  }
-  #section-dashboard .dashboard-body{
-    overflow-y:auto;
-  }
-  #section-tempat{
-    min-height:0;overflow:hidden;
-  }
-  #section-profil{
-    min-height:0;overflow:hidden;
-  }
-
-  #section-onboarding{
-    min-height:auto;
-    border-radius:var(--r-xl);
-    overflow:hidden;
-  }
-
-  /* Nav sits at bottom of shell, rounded */
-  .bottom-nav{
-    border-radius:0 0 var(--r-xl) var(--r-xl);
-    flex-shrink:0;
-    position:static;
-  }
-
-  /* Sticky headers inside scrollable sections */
-  .dashboard-header,
-  .page-header{
-    position:sticky;top:0;z-index:50;
-  }
-
-  /* Sections scroll inside the shell */
-  #section-dashboard,
-  #section-tempat,
-  #section-profil{
-    display:flex;flex-direction:column;
-    overflow-y:auto;
-    max-height:calc(100vh - 64px - var(--nav-h));
-  }
-  .dashboard-body,
-  .page-body{
-    overflow-y:visible;
-    flex:1;
-  }
+  #section-onboarding{min-height:auto;}
+  .bottom-nav{border-radius:0 0 var(--r-xl) var(--r-xl);}
 }
 
 /* ====== ONBOARDING ====== */
@@ -290,7 +228,7 @@ input[type="range"]::-moz-range-thumb{
 
 /* ====== DASHBOARD ====== */
 #section-dashboard{display:flex;flex-direction:column;min-height:100dvh;background:var(--bg);}
-@media(min-width:700px){#section-dashboard{min-height:0;}}
+@media(min-width:700px){#section-dashboard{min-height:600px;}}
 
 .dashboard-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -435,7 +373,6 @@ input[type="range"]::-moz-range-thumb{
 
 .empty-state{text-align:center;color:var(--text-muted);font-size:13px;padding:24px 0;}
 .bottom-spacer{height:calc(var(--nav-h) + 16px);}
-@media(min-width:700px){.bottom-spacer{height:20px;}}
 
 /* ====== TEMPAT ====== */
 #section-tempat{background:var(--bg);}
