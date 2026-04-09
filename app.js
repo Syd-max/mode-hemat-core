@@ -91,25 +91,25 @@ const ACTIVITY_TEMPLATES = {
   cozy: [
     { name:'Ngopi di Kafe Cozy',      cat:'cafe',      icon:'☕', price:30000, unsplash:'photo-1459755486867-b55449bb39ff?w=600&q=70' },
     { name:'Baca Buku di Rumah',      cat:'free',      icon:'📚', price:0,     unsplash:'photo-1519682337058-a94d519337bc?w=600&q=70' },
-    { name:'Makan Comfort Food',      cat:'food',      icon:'🍲', price:40000, unsplash:'photo-1546069901-ba9599a7e63c?w=600&q=70' },
+    { name:'Makan Comfort Food',      cat:'food',      icon:'🍲', price:30000, unsplash:'photo-1546069901-ba9599a7e63c?w=600&q=70' },
     { name:'Nonton Series di Kos',    cat:'free',      icon:'📺', price:0,     unsplash:'photo-1522869635100-9f4c5e86aa37?w=600&q=70' },
     { name:'Bobo Siang Quality Time', cat:'free',      icon:'😴', price:0,     unsplash:'photo-1520206183501-b80df61043c2?w=600&q=70' },
     { name:'Bikin Minuman Sendiri',   cat:'free',      icon:'🍵', price:5000,  unsplash:'photo-1544787219-7f47ccb76574?w=600&q=70' },
   ],
   explore: [
-    { name:'Trip ke Gunung Gede',     cat:'explore',   icon:'🏔️', price:150000,unsplash:'photo-1464822759023-fed622ff2c3b?w=600&q=70' },
-    { name:'Day Trip ke Pantai',      cat:'explore',   icon:'🏖️', price:100000,unsplash:'photo-1507525428034-b723cf961d3e?w=600&q=70' },
-    { name:'Jalan ke Taman Kota',     cat:'free',      icon:'🌳', price:0,     unsplash:'photo-1504208434309-cb69f4fe52b0?w=600&q=70' },
+    { name:'Trip ke Gunung Gede',     cat:'explore',   icon:'🏔️', price:150000,imgUrl:'https://travelspromo.com/wp-content/uploads/2021/07/Puncak-Pangrango-tampak-dari-Puncak-Gede-Agus-Jaya-Saputra-e1626060003914.jpg' },
+    { name:'Day Trip ke Pantai',      cat:'explore',   icon:'🏖️', price:100000,imgUrl:'https://www.pesisir.net/wp-content/uploads/2020/07/Pantai-Ancols.jpg' },
+    { name:'Jalan ke Taman Kota',     cat:'free',      icon:'🌳', price:0,     imgUrl:'https://c.inilah.com/2022/11/1115_112611_bc35_inilah.com_.jpg' },
     { name:'Explore Kafe Baru',       cat:'cafe',      icon:'🗺️', price:40000, unsplash:'photo-1600093463592-8e36ae95ef56?w=600&q=70' },
-    { name:'Curug Hunting',           cat:'explore',   icon:'💦', price:30000, unsplash:'photo-1471513671800-b09c87e1497c?w=600&q=70' },
-    { name:'Keliling Kota Tua',       cat:'free',      icon:'🏛️', price:0,     unsplash:'photo-1555881400-74d7acaacd8b?w=600&q=70' },
+    { name:'Curug Hunting',           cat:'explore',   icon:'💦', price:30000, imgUrl:'https://1.bp.blogspot.com/-wHCd1Bz4vuI/Xb-f_h-sI6I/AAAAAAAADwg/kTK6zZMqIE8pFjstmVdwfb-gnwDYpKsDACLcBGAsYHQ/s1600/lokasi-dan-harga-tiket-masuk-curug-bidadari-sentul-paradise-park-bogor.jpg' },
+    { name:'Keliling Kota Tua',       cat:'free',      icon:'🏛️', price:0,     imgUrl:'https://jagoantravel.com/admin/gambar/wisata-kota-tua-jakarta-4.jpg' },
   ],
   fomo: [
     { name:'Kafe Aesthetic Viral',    cat:'cafe',      icon:'📸', price:45000, unsplash:'photo-1501339847302-ac426a4a7cbb?w=600&q=70' },
-    { name:'Thrift Item Viral',       cat:'thrifting', icon:'✨', price:75000, unsplash:'photo-1558769132-cb1aea458c5e?w=600&q=70' },
+    { name:'Thrift Item Viral',       cat:'thrifting', icon:'✨', price:25000, imgUrl:'https://www.len-diary.com/wp-content/uploads/2021/02/thrift-store-1024x768.jpg' },
     { name:'Kulineran Trending',      cat:'food',      icon:'🍱', price:55000, unsplash:'photo-1555396273-367ea4eb4db5?w=600&q=70' },
-    { name:'Blok M Hangout',         cat:'fomo',      icon:'🔥', price:60000, unsplash:'photo-1512453979798-5ea266f8880c?w=600&q=70' },
-    { name:'Rooftop Golden Hour',     cat:'fomo',      icon:'🌅', price:80000, unsplash:'photo-1477959858617-67f85cf4f1df?w=600&q=70' },
+    { name:'Blok M Hangout',         cat:'fomo',      icon:'🔥', price:100000, imgUrl:'https://nnc-media.netralnews.com/2025/05/IMG-Netral-News-User-13643-5H8E0YIQVM.jpg' },
+    { name:'Rooftop Golden Hour',     cat:'fomo',      icon:'🌅', price:100000, imgUrl:'https://asset.kompas.com/crops/iRL7Rg9z6_-7GtgQ2wBPDc4HWFs=/85x0:795x473/1200x800/data/photo/2025/06/11/68492fdd1b6a1.png' },
     { name:'OOTD Spot Baru',          cat:'free',      icon:'🤳', price:0,     unsplash:'photo-1529636798458-92182e662485?w=600&q=70' },
   ],
   biasa: [
@@ -272,6 +272,12 @@ const Fmt = {
     if (diffHr  < 24) return `${diffHr} jam lalu`;
     return d.toLocaleDateString('id-ID',{ day:'numeric', month:'short' });
   },
+};
+
+const getImage = (src) => {
+  if (!src) return '';
+  if (src.startsWith('http')) return src;
+  return `https://images.unsplash.com/${src}?w=600&q=70`;
 };
 
 /* ============================================================
@@ -500,9 +506,9 @@ const UI = {
       const price      = tpl.price ?? 0;
       const canAfford  = price === 0 || budget >= price;
       const priceLabel = price === 0 ? 'Gratis ✓' : Fmt.rupiah(price);
-      const imgSrc     = tpl.imgUrl
-        ? escapeHTML(tpl.imgUrl)
-        : `https://images.unsplash.com/${tpl.unsplash || 'photo-1531498860502-7c67cf519b9e?w=600&q=70'}`;
+      const imgSrc = tpl.imgUrl
+         ? getImage(tpl.imgUrl)
+         : getImage(tpl.unsplash);
 
       return `
         <div class="activity-card" role="listitem">
