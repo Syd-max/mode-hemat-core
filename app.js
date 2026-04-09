@@ -113,7 +113,7 @@ const ACTIVITY_TEMPLATES = {
     { name:'OOTD Spot Baru',          cat:'free',      icon:'🤳', price:0,     unsplash:'photo-1529636798458-92182e662485?w=600&q=70' },
   ],
   biasa: [
-    { name:'Ngopi Sambil Kerja',      cat:'cafe',      icon:'💻', price:30000, unsplash:'photo-1531498860502-7c67cf519b9e?w=600&q=70' },
+    { name:'Ngopi Sambil Kerja',      cat:'cafe',      icon:'💻', price:30000, imgUrl:'https://expat.metroresidences.com/wp-content/uploads/sites/4/2018/04/30apr_hero.jpg' },
     { name:'Makan Siang Warteg',      cat:'food',      icon:'🍛', price:20000, unsplash:'photo-1504674900247-0877df9cc836?w=600&q=70' },
     { name:'Jalan Santai Sore',       cat:'free',      icon:'🌤️', price:0,     unsplash:'photo-1475924156734-496f6cac6ec1?w=600&q=70' },
     { name:'Beli Jajan Pinggir Jalan',cat:'food',      icon:'🧆', price:15000, unsplash:'photo-1567620905732-2d1ec7ab7445?w=600&q=70' },
