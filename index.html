@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Mode Hemat — Kelola uang dengan vibe-mu." />
+  <meta name="theme-color" content="#f0f7ff" />
+  <title>Mode Hemat ✦</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="desktop-app-shell">
+
+  <!-- ============================================================
+       SECTION: ONBOARDING
+  ============================================================ -->
+  <section id="section-onboarding" class="screen active" aria-label="Onboarding">
+    <div class="onboarding-bg"></div>
+    <div class="onboarding-container">
+
+      <div class="onboarding-header">
+        <p class="overline">selamat datang di</p>
+        <h1 class="app-title">Mode Hemat <span class="star">✦</span></h1>
+        <p class="tagline">Pilih vibe-mu, kendalikan uangmu. 🎯</p>
+      </div>
+
+      <!-- Mode Selection Cards — 4 pilihan relevan remaja Indo -->
+      <p class="section-label">Pilih Mode-mu</p>
+      <div class="mode-grid" id="mode-grid" role="radiogroup" aria-label="Pilih Mode">
+
+        <div class="mode-card" data-mode="gaul"
+             tabindex="0" role="radio" aria-checked="false"
+             style="--card-bg: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80')">
+          <div class="mode-card-overlay"></div>
+          <div class="mode-card-content">
+            <span class="mode-icon">📱</span>
+            <h3>Gaul Sosmed</h3>
+            <p>FOMO, konten, hits everywhere</p>
+          </div>
+          <div class="mode-card-check" aria-hidden="true">✓</div>
+        </div>
+
+        <div class="mode-card" data-mode="santai"
+             tabindex="0" role="radio" aria-checked="false"
+             style="--card-bg: url('https://images.unsplash.com/photo-1520206183501-b80df61043c2?w=400&q=80')">
+          <div class="mode-card-overlay"></div>
+          <div class="mode-card-content">
+            <span class="mode-icon">🛋️</span>
+            <h3>Santai di Rumah</h3>
+            <p>Low budget, vibes tenang, hemat</p>
+          </div>
+          <div class="mode-card-check" aria-hidden="true">✓</div>
+        </div>
+
+        <div class="mode-card" data-mode="petualang"
+             tabindex="0" role="radio" aria-checked="false"
+             style="--card-bg: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80')">
+          <div class="mode-card-overlay"></div>
+          <div class="mode-card-content">
+            <span class="mode-icon">🏔️</span>
+            <h3>Semangat Jalan</h3>
+            <p>Explore, adventure, out & about</p>
+          </div>
+          <div class="mode-card-check" aria-hidden="true">✓</div>
+        </div>
+
+        <div class="mode-card" data-mode="hemat-abis"
+             tabindex="0" role="radio" aria-checked="false"
+             style="--card-bg: url('https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&q=80')">
+          <div class="mode-card-overlay"></div>
+          <div class="mode-card-content">
+            <span class="mode-icon">💸</span>
+            <h3>Hemat Abis</h3>
+            <p>Nabung, minimalis, no mubazir</p>
+          </div>
+          <div class="mode-card-check" aria-hidden="true">✓</div>
+        </div>
+
+      </div>
+
+      <!-- Budget Slider -->
+      <div class="budget-setup" id="budget-setup">
+        <p class="section-label">Budget Bulanan</p>
+        <p class="budget-hint">💡 Ini adalah total uang yang kamu rencana <strong>keluarkan</strong> bulan ini — buat jajan, nongkrong, transport, dll. Sesuaikan sama kondisi kantong kamu!</p>
+        <div class="budget-display">
+          <span id="budget-display-value">Rp 2.500.000</span>
+        </div>
+        <div class="slider-container">
+          <span class="slider-min">Rp 500rb</span>
+          <input
+            type="range"
+            id="budget-slider"
+            min="500000"
+            max="10000000"
+            step="100000"
+            value="2500000"
+            aria-label="Budget bulanan"
+          />
+          <span class="slider-max">Rp 10 jt</span>
+        </div>
+        <button class="btn btn-primary btn-start" id="btn-start" disabled aria-disabled="true">
+          <span>Mulai Mode Hemat</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <p class="onboarding-note">🔒 Data tersimpan di browser-mu. Privat & gratis.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION: DASHBOARD
+  ============================================================ -->
+  <section id="section-dashboard" class="screen hidden" aria-label="Dashboard">
+
+    <header class="dashboard-header" id="dashboard-header">
+      <div class="header-left">
+        <span class="header-logo">Mode Hemat <span class="star-sm">✦</span></span>
+        <span class="mode-badge" id="mode-badge">—</span>
+      </div>
+      <button class="icon-btn" id="btn-settings" aria-label="Pengaturan">⚙️</button>
+    </header>
+
+    <div class="budget-section" id="budget-section">
+      <div class="budget-bar-wrap">
+        <div class="budget-bar-track" role="progressbar" aria-label="Sisa budget"
+             aria-valuemin="0" aria-valuemax="100" id="budget-bar-track">
+          <div class="budget-bar-fill" id="budget-bar-fill"></div>
+        </div>
+        <span class="budget-emoji" id="budget-emoji" aria-hidden="true">😊</span>
+      </div>
+      <div class="budget-numbers">
+        <div>
+          <p class="budget-label">Sisa Budget</p>
+          <h2 class="budget-amount" id="budget-amount">Rp 0</h2>
+        </div>
+        <div class="budget-total-wrap">
+          <p class="budget-label">dari</p>
+          <p class="budget-total" id="budget-total">Rp 0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-body">
+
+      <!-- Vibe Section -->
+      <div class="section-group">
+        <div class="vibe-section-header">
+          <p class="section-label-sm" style="margin-bottom:0">Sekarang kamu lagi...</p>
+          <button class="btn-add-activity" id="btn-ql-settings" aria-label="Edit Harga Quick Log">✏️ Edit Harga</button>
+        </div>
+        <div class="vibe-grid" id="vibe-grid">
+          <button class="vibe-btn" data-vibe="cozy" aria-pressed="false">
+            <span class="vibe-icon">🛋️</span>
+            <span class="vibe-text">Pengen Cozy</span>
+          </button>
+          <button class="vibe-btn" data-vibe="explore" aria-pressed="false">
+            <span class="vibe-icon">🏔️</span>
+            <span class="vibe-text">Semangat Explore</span>
+          </button>
+          <button class="vibe-btn" data-vibe="fomo" aria-pressed="false">
+            <span class="vibe-icon">📱</span>
+            <span class="vibe-text">FOMO Story</span>
+          </button>
+          <button class="vibe-btn" data-vibe="biasa" aria-pressed="false">
+            <span class="vibe-icon">😴</span>
+            <span class="vibe-text">Biasa Aja</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Activity Cards -->
+      <div class="section-group hidden" id="activities-section">
+        <div class="vibe-section-header">
+          <p class="section-label-sm" style="margin-bottom:0">Aktivitas buat kamu ✦</p>
+          <button class="btn-add-activity" id="btn-show-add-activity">+ Tambah</button>
+        </div>
+
+        <!-- Add custom activity form (hidden by default) -->
+        <div class="add-activity-form hidden" id="add-activity-form">
+          <p class="form-title">Tambah Aktivitas Sendiri</p>
+          <div class="form-group">
+            <label for="act-name">Nama Tempat / Aktivitas</label>
+            <input type="text" id="act-name" placeholder="cth: Sunset di Danau Sunter" maxlength="60" />
+          </div>
+          <div class="form-group">
+            <label for="act-desc">Deskripsi singkat</label>
+            <input type="text" id="act-desc" placeholder="cth: Views keren, santai, gratis!" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label for="act-price">Estimasi Biaya (Rp, isi 0 jika gratis)</label>
+            <input type="number" id="act-price" placeholder="cth: 50000" min="0" max="5000000" />
+          </div>
+          <div class="form-group">
+            <label for="act-img">URL Foto (opsional)</label>
+            <input type="url" id="act-img" placeholder="https://..." />
+          </div>
+          <div class="form-row">
+            <button class="btn btn-ghost" id="btn-cancel-act">Batal</button>
+            <button class="btn btn-primary" id="btn-save-act" style="width:auto;flex:1">Simpan ✦</button>
+          </div>
+        </div>
+
+        <div class="activity-scroll-container" id="activity-cards" role="list"></div>
+      </div>
+
+      <!-- Quick Log -->
+      <div class="section-group">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <p class="section-label-sm" style="margin-bottom:0">Quick Log</p>
+          <button class="btn-add-activity" id="btn-ql-settings">⚙️ Setting harga</button>
+        </div>
+        <div class="quick-log-grid" id="quick-log-grid">
+          <!-- Rendered by JS so prices are dynamic -->
+        </div>
+      </div>
+
+      <!-- Today Transactions -->
+      <div class="section-group" id="today-transactions-section">
+        <p class="section-label-sm">Transaksi Hari Ini</p>
+        <div id="today-transactions-list" class="transaction-list">
+          <p class="empty-state">Belum ada transaksi hari ini. 🌟</p>
+        </div>
+      </div>
+
+      <div class="bottom-spacer"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================================
+       SECTION: TEMPAT
+  ============================================================ -->
+  <section id="section-tempat" class="screen hidden" aria-label="Tempat">
+
+    <header class="page-header">
+      <h2 class="page-title">🗺️ Tempat Favorit</h2>
+    </header>
+
+    <div class="page-body">
+      <div class="filter-bar" role="group" aria-label="Filter tempat">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="cafe">☕ Kafe</button>
+        <button class="filter-btn" data-filter="thrifting">🛍️ Thrifting</button>
+        <button class="filter-btn" data-filter="free">🌳 Gratis</button>
+        <button class="filter-btn" data-filter="explore">🏔️ Explore</button>
+        <button class="filter-btn" data-filter="fomo">🔥 FOMO</button>
+        <button class="filter-btn" data-filter="cozy">☁️ Cozy</button>
+      </div>
+
+      <button class="btn btn-outline btn-add-place" id="btn-toggle-add-place">
+        + Tambah Tempat Sendiri
+      </button>
+
+      <div class="add-place-form hidden" id="add-place-form">
+        <h4 class="form-title">Tempat Baru 📍</h4>
+        <div class="form-group">
+          <label for="place-name">Nama Tempat</label>
+          <input type="text" id="place-name" placeholder="cth: Kopi Tuku Cipete" maxlength="60" />
+        </div>
+        <div class="form-group">
+          <label for="place-type">Kategori</label>
+          <select id="place-type">
+            <option value="cafe">☕ Kafe</option>
+            <option value="thrifting">🛍️ Thrifting</option>
+            <option value="free">🌳 Gratis</option>
+            <option value="explore">🏔️ Explore</option>
+            <option value="fomo">🔥 FOMO Spot</option>
+            <option value="cozy">☁️ Cozy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="place-price">Estimasi Harga (Rp)</label>
+          <input type="number" id="place-price" placeholder="cth: 35000" min="0" max="10000000" />
+        </div>
+        <div class="form-group">
+          <label for="place-desc">Deskripsi singkat (opsional)</label>
+          <input type="text" id="place-desc" placeholder="cth: View bagus, AC, ada colokan" maxlength="100" />
+        </div>
+        <div class="form-row">
+          <button class="btn btn-ghost" id="btn-cancel-place">Batal</button>
+          <button class="btn btn-primary" id="btn-save-place" style="width:auto;flex:1">Simpan</button>
+        </div>
+      </div>
+
+      <div id="places-list" class="places-list" role="list"></div>
+      <div class="bottom-spacer"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================================================
+       SECTION: PROFIL / SAYA
+  ============================================================ -->
+  <section id="section-profil" class="screen hidden" aria-label="Profil">
+
+    <header class="page-header">
+      <h2 class="page-title">Halo, Hemat-er 👋</h2>
+    </header>
+
+    <div class="page-body">
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <span class="stat-icon">🌟</span>
+          <span class="stat-value" id="stat-happy-days">0</span>
+          <span class="stat-label">Hari Happy</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-value" id="stat-boros-weeks">0</span>
+          <span class="stat-label">Minggu Boros</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <span class="stat-value" id="stat-total-spent">0</span>
+          <span class="stat-label">Total Keluar</span>
+        </div>
+      </div>
+
+      <!-- Riwayat — collapsed by default -->
+      <div class="section-group">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <p class="section-label-sm" style="margin-bottom:0">Riwayat Transaksi</p>
+          <button class="btn-add-activity" id="btn-toggle-history">Lihat Semua ↓</button>
+        </div>
+        <div id="all-transactions-list" class="transaction-list collapsed">
+          <p class="empty-state">Belum ada transaksi.</p>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn btn-outline profile-action-btn" id="btn-export">
+          📊 Export ke Excel / CSV
+        </button>
+        <label class="btn btn-outline profile-action-btn" for="import-file-input">
+          📥 Import Data
+          <input type="file" id="import-file-input" accept=".json" class="hidden-file-input" />
+        </label>
+        <button class="btn btn-outline profile-action-btn btn-danger-outline" id="btn-ganti-mode">
+          🔄 Ganti Mode
+        </button>
+        <button class="btn btn-danger-solid profile-action-btn" id="btn-hapus">
+          🗑️ Hapus Semua Data
+        </button>
+      </div>
+
+      <div class="bottom-spacer"></div>
+    </div>
+
+  </section>
+
+  <!-- ====== BOTTOM NAV ====== -->
+  <nav class="bottom-nav hidden" id="bottom-nav" aria-label="Navigasi utama">
+    <button class="nav-btn active" data-target="section-dashboard" aria-label="Hari Ini">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Hari Ini</span>
+    </button>
+    <button class="nav-btn" data-target="section-tempat" aria-label="Tempat">
+      <span class="nav-icon">📍</span>
+      <span class="nav-label">Tempat</span>
+    </button>
+    <button class="nav-btn" data-target="section-profil" aria-label="Profil">
+      <span class="nav-icon">😊</span>
+      <span class="nav-label">Saya</span>
+    </button>
+  </nav>
+
+  <!-- ====== MODAL: Spend ====== -->
+  <div class="modal-backdrop hidden" id="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h3 id="modal-title">Konfirmasi 💳</h3>
+      <p id="modal-desc" class="modal-desc"></p>
+      <div class="modal-row">
+        <button class="btn btn-ghost" id="modal-cancel">Batal</button>
+        <button class="btn btn-primary" id="modal-confirm" style="width:auto;flex:1">Ya, Catat!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: Settings ====== -->
+  <div class="modal-backdrop hidden" id="settings-backdrop" aria-hidden="true">
+    <div class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h3 id="settings-title">⚙️ Pengaturan</h3>
+      <div class="settings-info" id="settings-info"></div>
+      <button class="btn btn-ghost settings-close" id="settings-close">Tutup</button>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: Quick Log Settings ====== -->
+  <div class="modal-backdrop hidden" id="ql-settings-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ql-settings-title">
+      <h3 id="ql-settings-title">💰 Atur Harga Quick Log</h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Sesuaikan harga sesuai daerah & kebiasaan kamu ya!</p>
+      <div class="ql-settings-grid" id="ql-settings-grid">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" id="ql-settings-cancel">Batal</button>
+        <button class="btn btn-primary" id="ql-settings-save" style="width:auto;flex:1">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TOAST ====== -->
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+</div><!-- /.desktop-app-shell -->
+
+  <script src="app.js"></script>
+</body>
+</html>
