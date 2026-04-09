@@ -91,7 +91,7 @@ const ACTIVITY_TEMPLATES = {
   cozy: [
     { name:'Ngopi di Kafe Cozy',      cat:'cafe',      icon:'☕', price:30000, unsplash:'photo-1459755486867-b55449bb39ff?w=600&q=70' },
     { name:'Baca Buku di Rumah',      cat:'free',      icon:'📚', price:0,     unsplash:'photo-1519682337058-a94d519337bc?w=600&q=70' },
-    { name:'Makan Comfort Food',      cat:'food',      icon:'🍲', price:40000, unsplash:'photo-1476224203421-9ac39bcb3b21?w=600&q=70' },
+    { name:'Makan Comfort Food',      cat:'food',      icon:'🍲', price:40000, unsplash:'https://unsplash.com/id/foto/sayuran-dan-daging-di-atas-mangkuk-kcA-c3f_3FE=600&q=70' },
     { name:'Nonton Series di Kos',    cat:'free',      icon:'📺', price:0,     unsplash:'photo-1522869635100-9f4c5e86aa37?w=600&q=70' },
     { name:'Bobo Siang Quality Time', cat:'free',      icon:'😴', price:0,     unsplash:'photo-1520206183501-b80df61043c2?w=600&q=70' },
     { name:'Bikin Minuman Sendiri',   cat:'free',      icon:'🍵', price:5000,  unsplash:'photo-1544787219-7f47ccb76574?w=600&q=70' },
