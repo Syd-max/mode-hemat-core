@@ -161,14 +161,16 @@ const Data = {
   createInitial(mode, budget) {
     return {
       mode,
-      totalBudget:     budget,
-      remainingBudget: budget,
-      transactions:    [],
-      places:          JSON.parse(JSON.stringify(DEFAULT_PLACES)),
-      customActivities:{},
-      qlPrices:        { ...DEFAULT_QL_PRICES },
-      vibes:           [],
-      createdAt:       new Date().toISOString(),
+      totalBudget:      budget,
+      remainingBudget:  budget,
+      transactions:     [],
+      places:           JSON.parse(JSON.stringify(DEFAULT_PLACES)),
+      customActivities: {},
+      editedTemplates:  {},
+      dadakanList:      [],
+      qlPrices:         { ...DEFAULT_QL_PRICES },
+      vibes:            [],
+      createdAt:        new Date().toISOString(),
     };
   },
 
@@ -179,6 +181,8 @@ const Data = {
     if (!raw.createdAt) raw.createdAt = new Date().toISOString();
     if (!raw.qlPrices) raw.qlPrices = { ...DEFAULT_QL_PRICES };
     if (!raw.customActivities) raw.customActivities = {};
+    if (!raw.dadakanList) raw.dadakanList = [];
+    if (!raw.editedTemplates) raw.editedTemplates = {};
     // Merge any new default places not in saved data
     const savedIds = new Set(raw.places.map(p => p.id));
     DEFAULT_PLACES.forEach(dp => { if (!savedIds.has(dp.id)) raw.places.push({ ...dp }); });
@@ -496,13 +500,20 @@ const UI = {
     const container = document.getElementById('activity-cards');
     if (!section || !container) return;
 
+    // Apply edited template overrides
+    const baseTemplates = (ACTIVITY_TEMPLATES[vibe] || ACTIVITY_TEMPLATES.biasa).map((tpl, i) => {
+      const overrides = data.editedTemplates?.[vibe]?.[i];
+      if (overrides) return { ...tpl, ...overrides };
+      return tpl;
+    });
+
     const templates = [
-      ...(ACTIVITY_TEMPLATES[vibe] || ACTIVITY_TEMPLATES.biasa),
+      ...baseTemplates,
       ...(data.customActivities?.[vibe] || []),
     ];
     const budget = data.remainingBudget;
 
-    container.innerHTML = templates.map(tpl => {
+    container.innerHTML = templates.map((tpl, idx) => {
       const price      = tpl.price ?? 0;
       const canAfford  = price === 0 || budget >= price;
       const priceLabel = price === 0 ? 'Gratis ✓' : Fmt.rupiah(price);
@@ -511,7 +522,9 @@ const UI = {
          : getImage(tpl.unsplash);
 
       return `
-        <div class="activity-card" role="listitem">
+        <div class="activity-card" role="listitem"
+             data-vibe="${vibe}" data-act-index="${idx}">
+          <button class="activity-edit-btn" title="Edit aktivitas ini" aria-label="Edit ${escapeHTML(tpl.name)}">✏️</button>
           <img class="activity-card-img" src="${imgSrc}" alt="${escapeHTML(tpl.name)}"
                loading="lazy"
                onerror="this.style.background='var(--bg-elevated)';this.style.height='120px';this.removeAttribute('src');" />
@@ -576,7 +589,7 @@ const UI = {
 ============================================================ */
 
 const Nav = {
-  SECTIONS: ['section-dashboard','section-tempat','section-profil'],
+  SECTIONS: ['section-dashboard','section-dadakan','section-tempat','section-profil'],
 
   goTo(targetId) {
     if (!Nav.SECTIONS.includes(targetId)) return;
@@ -586,9 +599,10 @@ const Nav = {
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.target === targetId);
     });
-    if (targetId === 'section-tempat')  UI.renderPlaces();
-    if (targetId === 'section-profil') { UI.renderStats(); UI.renderAllTransactions(); }
+    if (targetId === 'section-tempat')   UI.renderPlaces();
+    if (targetId === 'section-profil')   { UI.renderStats(); UI.renderAllTransactions(); }
     if (targetId === 'section-dashboard') UI.renderTodayTransactions();
+    if (targetId === 'section-dadakan')  Dadakan.render();
   },
 };
 
@@ -978,6 +992,7 @@ const Settings = {
 const App = {
   init() {
     Sound.init();
+    Glitter.init();
 
     const stored = Storage.load();
     if (stored) {
@@ -985,7 +1000,6 @@ const App = {
       App.showDashboard();
     } else {
       App.showOnboarding();
-      // Play welcome sound after short delay (needs user interaction first on some browsers)
       setTimeout(() => Sound.playWelcome(), 800);
     }
 
@@ -995,12 +1009,14 @@ const App = {
     Settings.init();
     QLSettings.init();
     CustomActivity.init();
+    Dadakan.init();
+    EditActivity.init();
     App.initGlobalEvents();
   },
 
   showOnboarding() {
     document.getElementById('section-onboarding')?.classList.remove('hidden');
-    ['section-dashboard','section-tempat','section-profil'].forEach(id =>
+    ['section-dashboard','section-dadakan','section-tempat','section-profil'].forEach(id =>
       document.getElementById(id)?.classList.add('hidden')
     );
     document.getElementById('bottom-nav')?.classList.add('hidden');
@@ -1065,6 +1081,7 @@ const App = {
       UI.closeConfirmModal();
       Settings.close();
       QLSettings.close();
+      EditActivity.close();
     });
   },
 };
@@ -1082,6 +1099,213 @@ function escapeHTML(str) {
     .replace(/"/g,'&quot;')
     .replace(/'/g,'&#39;');
 }
+
+/* ============================================================
+   DADAKAN — Pengeluaran Tidak Terduga
+============================================================ */
+
+const Dadakan = {
+  init() {
+    document.getElementById('btn-save-dadakan')?.addEventListener('click', Dadakan.save);
+  },
+
+  save() {
+    const judul  = document.getElementById('dadakan-judul')?.value.trim() || '';
+    const biaya  = Number(document.getElementById('dadakan-biaya')?.value) || 0;
+    const catatan= document.getElementById('dadakan-catatan')?.value.trim() || '';
+
+    if (!judul || judul.length < 2) { UI.showToast('⚠️ Judul minimal 2 karakter.'); return; }
+    if (biaya < 0 || biaya > 100000000) { UI.showToast('⚠️ Biaya tidak valid.'); return; }
+
+    if (!data.dadakanList) data.dadakanList = [];
+    data.dadakanList.unshift({
+      id:     `ddkn_${Date.now()}`,
+      judul,
+      biaya,
+      catatan,
+      date:   new Date().toISOString(),
+    });
+    // Also deduct from budget
+    Data.addTransaction(biaya, judul, 'dadakan', '⚡');
+    Storage.save(data);
+    Dadakan.render();
+    Dadakan.clearForm();
+    UI.showToast('⚡ Pengeluaran dadakan tercatat!');
+    Sound.playTap();
+  },
+
+  render() {
+    const list = document.getElementById('dadakan-list');
+    const badge= document.getElementById('dadakan-total-badge');
+    if (!list) return;
+
+    if (!data.dadakanList) data.dadakanList = [];
+    const items = data.dadakanList;
+
+    if (!items.length) {
+      list.innerHTML = '<p class="empty-state">Belum ada pengeluaran dadakan. Semoga terus begitu! 🤞</p>';
+      if (badge) badge.textContent = 'Total: Rp 0';
+      return;
+    }
+
+    const total = items.reduce((s, i) => s + i.biaya, 0);
+    if (badge) badge.textContent = `Total: ${Fmt.rupiahShort(total)}`;
+
+    list.innerHTML = items.map(item => `
+      <div class="dadakan-item" role="listitem">
+        <div class="dadakan-item-icon">⚡</div>
+        <div class="dadakan-item-info">
+          <p class="dadakan-item-name">${escapeHTML(item.judul)}</p>
+          ${item.catatan ? `<p class="dadakan-item-note">${escapeHTML(item.catatan)}</p>` : ''}
+          <p class="dadakan-item-date">${Fmt.relativeDate(item.date)}</p>
+        </div>
+        <span class="dadakan-item-amount">${item.biaya === 0 ? 'Gratis' : '−'+Fmt.rupiah(item.biaya)}</span>
+      </div>`).join('');
+  },
+
+  clearForm() {
+    ['dadakan-judul','dadakan-biaya','dadakan-catatan'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  },
+};
+
+/* ============================================================
+   EDIT ACTIVITY (template editable per vibe)
+============================================================ */
+
+const EditActivity = {
+  init() {
+    document.getElementById('edit-act-cancel')?.addEventListener('click', EditActivity.close);
+    document.getElementById('edit-act-save')?.addEventListener('click', EditActivity.save);
+    document.getElementById('edit-activity-backdrop')?.addEventListener('click', e => {
+      if (e.target === document.getElementById('edit-activity-backdrop')) EditActivity.close();
+    });
+
+    // Delegate edit button clicks on activity cards
+    document.getElementById('activity-cards')?.addEventListener('click', e => {
+      const editBtn = e.target.closest('.activity-edit-btn');
+      if (!editBtn) return;
+      const card = editBtn.closest('.activity-card');
+      if (!card) return;
+      const vibe  = card.dataset.vibe;
+      const idx   = card.dataset.actIndex;
+      const isCustom = card.dataset.isCustom === 'true';
+      EditActivity.open(vibe, idx, isCustom);
+    });
+  },
+
+  open(vibe, index, isCustom) {
+    const allActivities = [
+      ...(ACTIVITY_TEMPLATES[vibe] || ACTIVITY_TEMPLATES.biasa),
+      ...(data.customActivities?.[vibe] || []),
+    ];
+    const act = allActivities[Number(index)];
+    if (!act) return;
+
+    document.getElementById('edit-act-vibe').value  = vibe;
+    document.getElementById('edit-act-index').value = index;
+    document.getElementById('edit-act-name').value  = act.name || '';
+    document.getElementById('edit-act-price').value = act.price ?? 0;
+    document.getElementById('edit-act-cat').value   = act.cat || 'custom';
+
+    const backdrop = document.getElementById('edit-activity-backdrop');
+    backdrop?.classList.remove('hidden');
+    backdrop?.setAttribute('aria-hidden','false');
+    document.getElementById('edit-act-name')?.focus();
+  },
+
+  save() {
+    const vibe  = document.getElementById('edit-act-vibe')?.value;
+    const index = Number(document.getElementById('edit-act-index')?.value);
+    const name  = document.getElementById('edit-act-name')?.value.trim() || '';
+    const price = Math.max(0, Number(document.getElementById('edit-act-price')?.value) || 0);
+    const cat   = document.getElementById('edit-act-cat')?.value || 'custom';
+
+    if (!name || name.length < 2) { UI.showToast('⚠️ Nama minimal 2 karakter.'); return; }
+
+    const templateCount = (ACTIVITY_TEMPLATES[vibe] || ACTIVITY_TEMPLATES.biasa).length;
+
+    if (index < templateCount) {
+      // Edit template: store override in customActivities with same index slot
+      if (!data.editedTemplates) data.editedTemplates = {};
+      if (!data.editedTemplates[vibe]) data.editedTemplates[vibe] = {};
+      data.editedTemplates[vibe][index] = { name, price, cat };
+    } else {
+      // Edit custom activity
+      const customIndex = index - templateCount;
+      if (data.customActivities?.[vibe]?.[customIndex]) {
+        data.customActivities[vibe][customIndex].name  = name;
+        data.customActivities[vibe][customIndex].price = price;
+        data.customActivities[vibe][customIndex].cat   = cat;
+      }
+    }
+
+    Storage.save(data);
+    EditActivity.close();
+    UI.renderActivities(vibe);
+    UI.showToast('✅ Aktivitas diperbarui!');
+  },
+
+  close() {
+    const backdrop = document.getElementById('edit-activity-backdrop');
+    backdrop?.classList.add('hidden');
+    backdrop?.setAttribute('aria-hidden','true');
+  },
+};
+
+/* ============================================================
+   GLITTER & ORNAMENT BACKGROUND
+============================================================ */
+
+const Glitter = {
+  init() {
+    const canvas = document.getElementById('glitter-canvas');
+    if (!canvas) return;
+
+    // Subtle sparkle dots
+    const colors = ['#3b9eff','#00c9a7','#a29bfe','#ff9f43','#f9ca24'];
+    for (let i = 0; i < 18; i++) {
+      const star = document.createElement('div');
+      star.className = 'g-star';
+      const size = Math.random() * 5 + 3;
+      star.style.cssText = `
+        width:${size}px;height:${size}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        left:${Math.random()*100}%;top:${Math.random()*100}%;
+        --dur:${(Math.random()*4+2).toFixed(1)}s;
+        --delay:${(Math.random()*5).toFixed(1)}s;
+        border-radius:${Math.random()>.5?'50%':'3px'};
+        opacity:0;
+      `;
+      canvas.appendChild(star);
+    }
+
+    // Floating ornament shapes (SVG inline)
+    const shapes = [
+      { emoji:'✦', size:22, left:8,  top:15, dur:11, delay:0,   rot0:0,   rot1:20  },
+      { emoji:'◇', size:16, left:88, top:8,  dur:14, delay:2,   rot0:-5,  rot1:15  },
+      { emoji:'✦', size:14, left:5,  top:70, dur:9,  delay:3.5, rot0:10,  rot1:-10 },
+      { emoji:'◈', size:18, left:92, top:55, dur:13, delay:1,   rot0:0,   rot1:25  },
+      { emoji:'✦', size:12, left:50, top:5,  dur:10, delay:4,   rot0:-8,  rot1:12  },
+    ];
+
+    shapes.forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'ornament-shape';
+      el.textContent = s.emoji;
+      el.style.cssText = `
+        font-size:${s.size}px;
+        left:${s.left}%;top:${s.top}%;
+        color:rgba(59,158,255,0.18);
+        --dur:${s.dur}s;--delay:${s.delay}s;
+        --rot0:${s.rot0}deg;--rot1:${s.rot1}deg;
+      `;
+      document.body.appendChild(el);
+    });
+  },
+};
 
 /* ============================================================
    BOOT
