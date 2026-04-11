@@ -13,6 +13,9 @@
 </head>
 <body>
 
+  <!-- ====== GLITTER & ORNAMENT BG ====== -->
+  <div class="glitter-canvas" id="glitter-canvas" aria-hidden="true"></div>
+
   <!-- ============================================================
        SECTION: ONBOARDING
   ============================================================ -->
@@ -351,11 +354,71 @@
 
   </section>
 
+  <!-- ============================================================
+       SECTION: PENGELUARAN DADAKAN
+  ============================================================ -->
+  <section id="section-dadakan" class="screen hidden" aria-label="Pengeluaran Dadakan">
+    <div class="dadakan-bg-ornament"></div>
+
+    <header class="page-header">
+      <h2 class="page-title">⚡ Pengeluaran Dadakan</h2>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Banner / Hero Card -->
+      <div class="dadakan-banner">
+        <div class="dadakan-banner-icon">💸</div>
+        <div>
+          <p class="dadakan-banner-title">Pengeluaran Tidak Terduga</p>
+          <p class="dadakan-banner-sub">Catat yang tiba-tiba keluar — tanpa drama, tanpa foto!</p>
+        </div>
+      </div>
+
+      <!-- Add Form -->
+      <div class="dadakan-form-card" id="dadakan-form-card">
+        <p class="form-title">+ Catat Pengeluaran Spontan</p>
+        <div class="form-group">
+          <label for="dadakan-judul">Judul / Keterangan</label>
+          <input type="text" id="dadakan-judul" placeholder="cth: Ban bocor di jalan, Nasi goreng tengah malam..." maxlength="80" />
+        </div>
+        <div class="form-group">
+          <label for="dadakan-biaya">Biaya (Rp)</label>
+          <input type="number" id="dadakan-biaya" placeholder="cth: 50000" min="0" max="100000000" />
+        </div>
+        <div class="form-group">
+          <label for="dadakan-catatan">Catatan (opsional)</label>
+          <input type="text" id="dadakan-catatan" placeholder="cth: Darurat, gak bisa nolak" maxlength="100" />
+        </div>
+        <button class="btn btn-dadakan" id="btn-save-dadakan">
+          <span>⚡ Catat Sekarang</span>
+        </button>
+      </div>
+
+      <!-- Riwayat Dadakan -->
+      <div class="section-group" style="padding:0;margin-top:20px;">
+        <div class="vibe-section-header" style="padding:0 0 12px 0;">
+          <p class="section-label-sm" style="margin-bottom:0">Riwayat Dadakan</p>
+          <span class="dadakan-total-badge" id="dadakan-total-badge">Total: Rp 0</span>
+        </div>
+        <div id="dadakan-list" class="dadakan-list">
+          <p class="empty-state">Belum ada pengeluaran dadakan. Semoga terus begitu! 🤞</p>
+        </div>
+      </div>
+
+      <div class="bottom-spacer"></div>
+    </div>
+  </section>
+
   <!-- ====== BOTTOM NAV ====== -->
   <nav class="bottom-nav hidden" id="bottom-nav" aria-label="Navigasi utama">
     <button class="nav-btn active" data-target="section-dashboard" aria-label="Hari Ini">
       <span class="nav-icon">🏠</span>
       <span class="nav-label">Hari Ini</span>
+    </button>
+    <button class="nav-btn" data-target="section-dadakan" aria-label="Dadakan">
+      <span class="nav-icon">⚡</span>
+      <span class="nav-label">Dadakan</span>
     </button>
     <button class="nav-btn" data-target="section-tempat" aria-label="Tempat">
       <span class="nav-icon">📍</span>
@@ -399,6 +462,39 @@
       <div class="modal-row">
         <button class="btn btn-ghost" id="ql-settings-cancel">Batal</button>
         <button class="btn btn-primary" id="ql-settings-save" style="width:auto;flex:1">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: Edit Activity Template ====== -->
+  <div class="modal-backdrop hidden" id="edit-activity-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-activity-title">
+      <h3 id="edit-activity-title">✏️ Edit Aktivitas</h3>
+      <input type="hidden" id="edit-act-vibe" />
+      <input type="hidden" id="edit-act-index" />
+      <div class="form-group">
+        <label for="edit-act-name">Nama Aktivitas</label>
+        <input type="text" id="edit-act-name" maxlength="60" />
+      </div>
+      <div class="form-group">
+        <label for="edit-act-price">Harga (Rp)</label>
+        <input type="number" id="edit-act-price" min="0" max="10000000" />
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label for="edit-act-cat">Kategori</label>
+        <select id="edit-act-cat">
+          <option value="cafe">☕ Cafe</option>
+          <option value="food">🍜 Food</option>
+          <option value="free">🌳 Gratis</option>
+          <option value="explore">🏔️ Explore</option>
+          <option value="fomo">🔥 FOMO</option>
+          <option value="thrifting">🛍️ Thrifting</option>
+          <option value="custom">✨ Custom</option>
+        </select>
+      </div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" id="edit-act-cancel">Batal</button>
+        <button class="btn btn-primary" id="edit-act-save" style="width:auto;flex:1">Simpan ✓</button>
       </div>
     </div>
   </div>
