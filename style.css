@@ -66,7 +66,10 @@ input,select,textarea{font-family:inherit;}
 
 .hidden{display:none!important;}
 
-.screen{display:flex;flex-direction:column;min-height:100dvh;width:100%;}
+.screen{display:flex;flex-direction:column;min-height:100dvh;width:100%;position:relative;}
+.screen.active{display:flex;}
+/* Screens that have bottom nav don't need full height forced */
+.screen.has-nav{min-height:auto;}
 
 /* Desktop card layout */
 @media(min-width:700px){
@@ -91,6 +94,7 @@ input,select,textarea{font-family:inherit;}
   display:flex;flex-direction:column;align-items:center;
   overflow:hidden;
   background:linear-gradient(170deg,#ddeeff 0%,#f0f9ff 60%,#e3f5f0 100%);
+  padding-top:env(safe-area-inset-top,0px);
 }
 @media(min-width:700px){#section-onboarding{min-height:auto;}}
 
@@ -109,7 +113,7 @@ input,select,textarea{font-family:inherit;}
 
 .onboarding-container{
   position:relative;z-index:1;width:100%;max-width:var(--app-width);
-  padding:40px 20px 32px;display:flex;flex-direction:column;gap:24px;
+  padding:20px 20px 32px;display:flex;flex-direction:column;gap:24px;
 }
 
 .onboarding-header{text-align:center;}
@@ -244,7 +248,7 @@ input[type="range"]::-moz-range-thumb{
 .icon-btn:hover{background:var(--bg-elevated);}
 
 .budget-section{
-  padding:20px 18px 16px;
+  padding:16px 18px 14px;
   background:linear-gradient(135deg,#ddeeff 0%,#e8f8f4 100%);
   border-bottom:1.5px solid var(--border);flex-shrink:0;
 }
@@ -518,17 +522,58 @@ input[type="range"]::-moz-range-thumb{
   position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
 }
 .glitter-canvas .g-star{
-  position:absolute;border-radius:50%;
+  position:absolute;
   animation:glitterFade var(--dur,3s) ease-in-out var(--delay,0s) infinite;
   opacity:0;
 }
 @keyframes glitterFade{
-  0%{opacity:0;transform:scale(.5) rotate(0deg);}
-  40%{opacity:.9;transform:scale(1) rotate(180deg);}
-  100%{opacity:0;transform:scale(.6) rotate(360deg);}
+  0%{opacity:0;transform:scale(.3) rotate(0deg);}
+  40%{opacity:1;transform:scale(1) rotate(180deg);}
+  100%{opacity:0;transform:scale(.5) rotate(360deg);}
 }
 
-/* Floating shapes ornament */
+/* Cute floating shapes */
+.cute-shape{
+  position:fixed;pointer-events:none;z-index:0;
+  animation:cuteFloat var(--dur,10s) ease-in-out var(--delay,0s) infinite;
+  opacity:var(--op,0.12);
+}
+@keyframes cuteFloat{
+  0%,100%{transform:translateY(0) rotate(var(--r0,0deg)) scale(1);}
+  33%{transform:translateY(-12px) rotate(var(--r1,8deg)) scale(1.05);}
+  66%{transform:translateY(6px) rotate(var(--r2,-5deg)) scale(0.97);}
+}
+
+/* Sparkle dot glitter */
+.g-dot{
+  position:absolute;
+  width:var(--sz,5px);height:var(--sz,5px);
+  border-radius:50%;
+  background:var(--col,rgba(59,158,255,0.6));
+  animation:dotTwinkle var(--dur,2.5s) ease-in-out var(--delay,0s) infinite;
+  opacity:0;
+}
+@keyframes dotTwinkle{
+  0%,100%{opacity:0;transform:scale(0.5);}
+  50%{opacity:0.8;transform:scale(1.2);}
+}
+
+/* Star sparkle shape */
+.g-sparkle{
+  position:absolute;
+  font-size:var(--sz,12px);
+  animation:sparkleTwirl var(--dur,4s) ease-in-out var(--delay,0s) infinite;
+  opacity:0;
+  user-select:none;
+}
+@keyframes sparkleTwirl{
+  0%{opacity:0;transform:scale(0.3) rotate(0deg);}
+  30%{opacity:0.7;transform:scale(1) rotate(120deg);}
+  70%{opacity:0.5;transform:scale(0.8) rotate(240deg);}
+  100%{opacity:0;transform:scale(0.3) rotate(360deg);}
+}
+
+/* Floating ornament shapes */
 .ornament-shape{
   position:fixed;pointer-events:none;z-index:0;
   animation:ornamentFloat var(--dur,12s) ease-in-out var(--delay,0s) infinite;
