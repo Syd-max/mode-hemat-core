@@ -1143,7 +1143,7 @@ const Dadakan = {
     const items = data.dadakanList;
 
     if (!items.length) {
-      list.innerHTML = '<p class="empty-state">Belum ada pengeluaran dadakan. Semoga terus begitu! 🤞</p>';
+      list.innerHTML = '<p class="empty-state">In this economy, semoga gak mendadak! 🤞</p>';
       if (badge) badge.textContent = 'Total: Rp 0';
       return;
     }
