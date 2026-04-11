@@ -1264,41 +1264,64 @@ const Glitter = {
     const canvas = document.getElementById('glitter-canvas');
     if (!canvas) return;
 
-    // Subtle sparkle dots
-    const colors = ['#3b9eff','#00c9a7','#a29bfe','#ff9f43','#f9ca24'];
-    for (let i = 0; i < 18; i++) {
-      const star = document.createElement('div');
-      star.className = 'g-star';
-      const size = Math.random() * 5 + 3;
-      star.style.cssText = `
+    const colors = ['#3b9eff','#00c9a7','#a29bfe','#ff9f43','#f9ca24','#fd79a8','#74b9ff'];
+
+    // Sparkle dots (small glitter)
+    for (let i = 0; i < 22; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'g-dot';
+      const size = Math.random() * 4 + 3;
+      dot.style.cssText = `
         width:${size}px;height:${size}px;
-        background:${colors[Math.floor(Math.random()*colors.length)]};
+        --col:${colors[Math.floor(Math.random()*colors.length)]};
         left:${Math.random()*100}%;top:${Math.random()*100}%;
-        --dur:${(Math.random()*4+2).toFixed(1)}s;
-        --delay:${(Math.random()*5).toFixed(1)}s;
-        border-radius:${Math.random()>.5?'50%':'3px'};
-        opacity:0;
+        --dur:${(Math.random()*3+1.5).toFixed(1)}s;
+        --delay:${(Math.random()*6).toFixed(1)}s;
       `;
-      canvas.appendChild(star);
+      canvas.appendChild(dot);
     }
 
-    // Floating ornament shapes (SVG inline)
+    // Star sparkles (✦ ✧ ⋆ ★)
+    const sparkleChars = ['✦','✧','⋆','✨','·'];
+    for (let i = 0; i < 14; i++) {
+      const sp = document.createElement('div');
+      sp.className = 'g-sparkle';
+      const sz = Math.random() * 10 + 8;
+      const col = colors[Math.floor(Math.random()*colors.length)];
+      sp.textContent = sparkleChars[Math.floor(Math.random()*sparkleChars.length)];
+      sp.style.cssText = `
+        --sz:${sz}px;font-size:${sz}px;
+        left:${Math.random()*98}%;top:${Math.random()*100}%;
+        color:${col};
+        --dur:${(Math.random()*4+2.5).toFixed(1)}s;
+        --delay:${(Math.random()*7).toFixed(1)}s;
+        filter:drop-shadow(0 0 ${Math.round(sz/2)}px ${col});
+      `;
+      canvas.appendChild(sp);
+    }
+
+    // Cute floating ornament shapes (bigger decorative, very subtle)
     const shapes = [
-      { emoji:'✦', size:22, left:8,  top:15, dur:11, delay:0,   rot0:0,   rot1:20  },
-      { emoji:'◇', size:16, left:88, top:8,  dur:14, delay:2,   rot0:-5,  rot1:15  },
-      { emoji:'✦', size:14, left:5,  top:70, dur:9,  delay:3.5, rot0:10,  rot1:-10 },
-      { emoji:'◈', size:18, left:92, top:55, dur:13, delay:1,   rot0:0,   rot1:25  },
-      { emoji:'✦', size:12, left:50, top:5,  dur:10, delay:4,   rot0:-8,  rot1:12  },
+      { emoji:'✦', size:20, left:7,  top:12, dur:11, delay:0,   rot0:0,   rot1:20,  op:0.13 },
+      { emoji:'◇', size:15, left:89, top:7,  dur:14, delay:2,   rot0:-5,  rot1:15,  op:0.10 },
+      { emoji:'✦', size:13, left:4,  top:68, dur:9,  delay:3.5, rot0:10,  rot1:-10, op:0.12 },
+      { emoji:'◈', size:17, left:93, top:52, dur:13, delay:1,   rot0:0,   rot1:25,  op:0.09 },
+      { emoji:'✦', size:11, left:50, top:4,  dur:10, delay:4,   rot0:-8,  rot1:12,  op:0.11 },
+      { emoji:'⬡', size:16, left:75, top:80, dur:12, delay:0.5, rot0:5,   rot1:-15, op:0.08 },
+      { emoji:'◇', size:12, left:20, top:88, dur:15, delay:2.5, rot0:0,   rot1:20,  op:0.10 },
+      { emoji:'✧', size:14, left:62, top:20, dur:8,  delay:1.5, rot0:-10, rot1:10,  op:0.12 },
     ];
 
-    shapes.forEach(s => {
+    const shapeColors = ['rgba(59,158,255,VAL)','rgba(162,155,254,VAL)','rgba(0,201,167,VAL)','rgba(253,121,168,VAL)','rgba(255,159,67,VAL)'];
+    shapes.forEach((s, i) => {
       const el = document.createElement('div');
       el.className = 'ornament-shape';
       el.textContent = s.emoji;
+      const col = shapeColors[i % shapeColors.length].replace('VAL', s.op);
       el.style.cssText = `
         font-size:${s.size}px;
         left:${s.left}%;top:${s.top}%;
-        color:rgba(59,158,255,0.18);
+        color:${col};
         --dur:${s.dur}s;--delay:${s.delay}s;
         --rot0:${s.rot0}deg;--rot1:${s.rot1}deg;
       `;
