@@ -10,13 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- GSAP for Gen-Z Motion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
         
         <!-- ONBOARDING VIEW -->
-        <section id="view-onboarding" class="view" style="display: flex; flex-direction: column; justify-content: center; height: 100vh; overflow: hidden; padding: 20px;">
+        <section id="view-onboarding" class="view view-fixed">
             <div class="onboarding-bg">
                 <div class="blob blob-1"></div>
                 <div class="blob blob-2"></div>
@@ -77,7 +79,10 @@
                 </div>
 
                 <div class="main-card">
-                    <p class="card-label">Uang Kamu</p>
+                    <div class="card-label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Uang Kamu</span>
+                        <button onclick="app.toggleBalanceVisibility()" style="background:transparent; border:none; color:rgba(255,255,255,0.8); cursor:pointer; padding: 4px; display:flex; align-items:center; transition: transform 0.2s;"><i class="ph ph-eye" id="toggle-balance-icon" style="font-size:22px;"></i></button>
+                    </div>
                     <h1 id="home-money-balance">Rp0</h1>
                     
                     <div class="budget-info mt-4">
