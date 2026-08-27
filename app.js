@@ -3,16 +3,25 @@ const app = {
         user: null,
         transactions: [],
         quickLogs: [
-            { id: 1, name: 'Jajan', amount: 15000, category: 'Jajan', icon: 'ph-ice-cream' },
-            { id: 2, name: 'Makan', amount: 25000, category: 'Makan', icon: 'ph-hamburger' },
-            { id: 3, name: 'Kopi', amount: 18000, category: 'Kopi', icon: 'ph-coffee' },
-            { id: 4, name: 'Transport', amount: 10000, category: 'Transport', icon: 'ph-car' },
-            { id: 5, name: 'Belanja', amount: 50000, category: 'Belanja', icon: 'ph-shopping-bag' },
-            { id: 6, name: 'Pulsa', amount: 20000, category: 'Lainnya', icon: 'ph-device-mobile' },
-            { id: 7, name: 'Nongkrong', amount: 35000, category: 'Lainnya', icon: 'ph-users' },
-            { id: 8, name: 'Parkir', amount: 2000, category: 'Transport', icon: 'ph-motorcycle' }
+            { id: 1, name: 'Makan siang', amount: 35000, category: 'Makan', icon: 'ph-hamburger' },
+            { id: 2, name: 'Es Kopi', amount: 18000, category: 'Kopi', icon: 'ph-coffee' },
+            { id: 3, name: 'Bensin', amount: 20000, category: 'Transport', icon: 'ph-gas-pump' },
+            { id: 4, name: 'Snack', amount: 10000, category: 'Jajan', icon: 'ph-cookie' }
         ],
         theme: 'light' // light or dark
+    },
+    
+    balanceVisible: true,
+    
+    toggleBalanceVisibility() {
+        this.balanceVisible = !this.balanceVisible;
+        const icon = document.getElementById('toggle-balance-icon');
+        if (this.balanceVisible) {
+            icon.className = 'ph ph-eye';
+        } else {
+            icon.className = 'ph ph-eye-slash';
+        }
+        this.updateHomeView();
     },
     
     selectedHomeDate: new Date(),
@@ -127,16 +136,40 @@ const app = {
     },
 
     showView(viewId) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        const view = document.getElementById(viewId);
-        if (view) {
-            view.classList.remove('hidden');
-            if (viewId === 'view-kalkulator') this.calcClear();
-            if (viewId === 'view-catat') {
-                document.getElementById('catat-amount').value = '';
-                document.getElementById('catat-name').value = '';
-                document.getElementById('catat-note').value = '';
+        const activeView = document.querySelector('.view:not(.hidden)');
+        const nextView = document.getElementById(viewId);
+        
+        if (activeView === nextView) return;
+
+        const completeTransition = () => {
+            if (activeView) activeView.classList.add('hidden');
+            if (nextView) {
+                nextView.classList.remove('hidden');
+                
+                // GSAP Enter Animation
+                if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    gsap.fromTo(nextView, 
+                        { opacity: 0, y: 15 }, 
+                        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
+                    );
+                }
+
+                if (viewId === 'view-kalkulator') this.calcClear();
+                if (viewId === 'view-catat') {
+                    document.getElementById('catat-amount').value = '';
+                    document.getElementById('catat-name').value = '';
+                    document.getElementById('catat-note').value = '';
+                }
             }
+        };
+
+        if (activeView && window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            gsap.to(activeView, {
+                opacity: 0, y: -10, duration: 0.2, ease: 'power2.in',
+                onComplete: completeTransition
+            });
+        } else {
+            completeTransition();
         }
     },
 
@@ -303,7 +336,11 @@ const app = {
         document.getElementById('home-days-left').innerText = `${daysLeft} hari tersisa bulan ini`;
 
         // Money
-        document.getElementById('home-money-balance').innerText = this.formatRp(this.state.user.currentMoney);
+        if(this.balanceVisible) {
+            document.getElementById('home-money-balance').innerText = this.formatRp(this.state.user.currentMoney);
+        } else {
+            document.getElementById('home-money-balance').innerText = 'Rp •••••••';
+        }
         
         // Budget calculations (Current Month)
         const currentMonth = now.getMonth();
@@ -323,16 +360,20 @@ const app = {
         document.getElementById('home-budget-used').innerText = this.formatRp(spentThisMonth);
         
         const pb = document.getElementById('home-budget-progress');
-        pb.style.width = progressPct + '%';
-        if (progressPct >= 90) pb.style.backgroundColor = 'var(--danger)';
-        else pb.style.backgroundColor = 'var(--primary)';
+        pb.style.transform = `scaleX(${progressPct / 100})`;
+        // Neon colors for progress bar
+        if (progressPct >= 90) pb.style.backgroundColor = '#ef4444'; // Bright Red
+        else pb.style.backgroundColor = '#34d399'; // Neon Emerald Green
+        pb.style.boxShadow = `0 0 10px ${pb.style.backgroundColor}`; // Glow effect
 
         // Quick Logs
         const qlContainer = document.getElementById('quick-log-container');
         qlContainer.innerHTML = '';
         this.state.quickLogs.forEach(ql => {
-            const btn = document.createElement('div');
+            const btn = document.createElement('button');
             btn.className = 'ql-btn';
+            btn.style.opacity = '0';
+            btn.style.transform = 'translateY(10px) scale(0.95)';
             btn.innerHTML = `
                 <div class="ql-icon"><i class="ph ${ql.icon}"></i></div>
                 <div class="ql-name">${ql.name}</div>
@@ -343,6 +384,14 @@ const app = {
             };
             qlContainer.appendChild(btn);
         });
+        
+        if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            gsap.to('.ql-btn', { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' });
+        } else {
+            document.querySelectorAll('.ql-btn').forEach(el => {
+                el.style.opacity = '1'; el.style.transform = 'none';
+            });
+        }
 
         // Transactions for selected date
         const selDateStr = this.selectedHomeDate.toDateString();
@@ -374,15 +423,16 @@ const app = {
         const txList = document.getElementById('home-transaction-list');
         txList.innerHTML = '';
         if (dayTxs.length === 0) {
-            txList.innerHTML = `<div class="tx-empty">Belum ada pengeluaran<br>Hemat or gak ada duit.</div>`;
+            txList.innerHTML = `<div class="tx-empty"><i class="ph-fill ph-ghost"></i>Belum ada pengeluaran<br>Hemat or gak ada duit.</div>`;
         } else {
+            let html = '';
             dayTxs.forEach(t => {
                 const time = new Date(t.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 const iconMap = { 'Makan': 'ph-hamburger', 'Jajan': 'ph-ice-cream', 'Transport': 'ph-car', 'Belanja': 'ph-shopping-bag', 'Kopi': 'ph-coffee', 'Lainnya': 'ph-dots-three' };
                 const icon = iconMap[t.category] || 'ph-receipt';
                 
-                txList.innerHTML += `
-                    <div class="tx-item">
+                html += `
+                    <div class="tx-item" style="opacity: 0; transform: translateY(15px);">
                         <div class="tx-info">
                             <div class="tx-icon"><i class="ph ${icon}"></i></div>
                             <div class="tx-details">
@@ -394,6 +444,16 @@ const app = {
                     </div>
                 `;
             });
+            txList.innerHTML = html;
+            
+            // GSAP Stagger Entrance
+            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                gsap.to('.tx-item', { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: 'power2.out' });
+            } else {
+                document.querySelectorAll('.tx-item').forEach(el => {
+                    el.style.opacity = 1; el.style.transform = 'none';
+                });
+            }
         }
     },
 
@@ -560,12 +620,15 @@ const app = {
             
             let itemsHtml = txs.map(t => {
                 const time = new Date(t.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const iconMap = { 'Makan': 'ph-hamburger', 'Jajan': 'ph-ice-cream', 'Transport': 'ph-car', 'Belanja': 'ph-shopping-bag', 'Kopi': 'ph-coffee', 'Lainnya': 'ph-dots-three' };
+                const icon = iconMap[t.category] || 'ph-receipt';
                 return `
-                    <div class="tx-item" style="padding: 12px 0;">
+                    <div class="tx-item" style="padding: 12px 16px; margin-bottom: 8px;">
                         <div class="tx-info">
+                            <div class="tx-icon" style="width: 36px; height: 36px; font-size: 18px;"><i class="ph ${icon}"></i></div>
                             <div class="tx-details">
                                 <h4 style="font-size:14px;">${t.name}</h4>
-                                <p style="font-size:11px;">${time} • ${t.category}</p>
+                                <p style="font-size:12px;">${time} • ${t.category}</p>
                             </div>
                         </div>
                         <div class="tx-amount" style="font-size:14px;">- ${this.formatRp(t.amount)}</div>
@@ -575,7 +638,7 @@ const app = {
 
             // FIXED HEADER OVERLAP: Stacked Date/Count on left, Amount/Arrow on right
             groupEl.innerHTML = `
-                <div class="history-date-header" onclick="app.toggleHistory('${headerId}')">
+                <button class="history-date-header" onclick="app.toggleHistory('${headerId}')">
                     <div class="history-date-left">
                         <span class="text-main font-bold" style="font-size: 15px;">${headerDate}</span>
                         <span class="text-muted" style="font-size: 12px;">${txs.length} transaksi</span>
@@ -584,28 +647,25 @@ const app = {
                         <span class="text-primary font-bold" style="font-size: 15px;">${this.formatRp(totalDay)}</span>
                         <i class="ph ph-caret-down" id="icon-${headerId}"></i>
                     </div>
-                </div>
-                <div class="history-items" id="${headerId}">
-                    ${itemsHtml}
+                </button>
+                <div class="history-items-wrapper open" id="wrapper-${headerId}">
+                    <div class="history-items" id="${headerId}">
+                        ${itemsHtml}
+                    </div>
                 </div>
             `;
             list.appendChild(groupEl);
-            
-            setTimeout(() => {
-                const itemsEl = document.getElementById(headerId);
-                if(itemsEl) itemsEl.style.maxHeight = itemsEl.scrollHeight + "px";
-            }, 10);
         }
     },
 
     toggleHistory(id) {
-        const el = document.getElementById(id);
+        const wrapper = document.getElementById(`wrapper-${id}`);
         const icon = document.getElementById(`icon-${id}`);
-        if (el.style.maxHeight && el.style.maxHeight !== '0px') {
-            el.style.maxHeight = '0px';
+        if (wrapper.classList.contains('open')) {
+            wrapper.classList.remove('open');
             icon.parentElement.parentElement.classList.add('collapsed');
         } else {
-            el.style.maxHeight = el.scrollHeight + "px";
+            wrapper.classList.add('open');
             icon.parentElement.parentElement.classList.remove('collapsed');
         }
     },
