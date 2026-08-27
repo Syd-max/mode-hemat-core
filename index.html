@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mode Hemat</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP ACTIONS (Theme Toggle) -->
+        <div class="global-top-actions">
+            <button class="icon-btn" onclick="app.toggleTheme()" id="theme-toggle"><i class="ph ph-moon"></i></button>
+        </div>
+
+        <!-- ONBOARDING VIEW -->
+        <section id="view-onboarding" class="view">
+            <div class="onboarding-content">
+                <div class="onboarding-header">
+                    <h1 class="logo-text">Mode Hemat</h1>
+                    <p class="tagline">"Biar uang nggak cuma lewat."</p>
+                </div>
+                
+                <div class="onboarding-form" id="onboarding-step-1">
+                    <button class="btn-primary" onclick="app.nextOnboarding()">Mulai Atur Uang</button>
+                </div>
+
+                <div class="onboarding-form hidden" id="onboarding-step-2">
+                    <div class="form-group">
+                        <label>Nama panggilan kamu</label>
+                        <input type="text" id="ob-name" placeholder="Misal: Adi" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Uang yang kamu pegang saat ini</label>
+                        <div class="input-prefix">
+                            <span>Rp</span>
+                            <input type="text" inputmode="numeric" id="ob-money" placeholder="5.000.000" oninput="app.formatInput(this)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Budget pengeluaran bulan ini</label>
+                        <div class="input-prefix">
+                            <span>Rp</span>
+                            <input type="text" inputmode="numeric" id="ob-budget" placeholder="1.000.000" oninput="app.formatInput(this)">
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-4" onclick="app.finishOnboarding()">Simpan & Mulai</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN LAYOUT -->
+        <div id="main-layout" class="hidden">
+            
+            <!-- HOME VIEW -->
+            <section id="view-home" class="view">
+                <div class="top-bar">
+                    <div class="date-summary">
+                        <h2 id="home-date">Kamis, 27 Agustus</h2>
+                        <p id="home-days-left" class="text-muted">4 hari tersisa bulan ini</p>
+                    </div>
+                    <div style="position: relative;">
+                        <input type="date" id="home-date-picker" onchange="app.changeHomeDate()" style="position: absolute; right: 0; opacity: 0; width: 40px; height: 40px; cursor: pointer;">
+                        <button class="icon-btn" style="pointer-events: none;"><i class="ph ph-calendar-blank"></i></button>
+                    </div>
+                </div>
+
+                <div class="main-card">
+                    <p class="card-label">Uang Kamu</p>
+                    <h1 id="home-money-balance">Rp0</h1>
+                    
+                    <div class="budget-info mt-4">
+                        <div class="budget-stats">
+                            <div>
+                                <p class="text-xs text-muted">Budget bulan ini</p>
+                                <p class="text-sm font-semibold" id="home-budget-total">Rp0</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-muted">Sisa budget</p>
+                                <p class="text-sm font-semibold" id="home-budget-left">Rp0</p>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-2">
+                            <div class="progress-fill" id="home-budget-progress"></div>
+                        </div>
+                        <p class="text-xs text-muted mt-2">Sudah dipakai <span id="home-budget-used" class="font-semibold text-main">Rp0</span></p>
+                    </div>
+                </div>
+
+                <div class="section mt-6">
+                    <div class="flex-between mb-4">
+                        <h3 class="section-title">Quick Log</h3>
+                        <button class="icon-text-btn" onclick="app.openModal('modal-quick-log')"><i class="ph ph-pencil-simple"></i> Edit</button>
+                    </div>
+                    <div class="quick-log-grid" id="quick-log-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="section mt-6">
+                    <div class="flex-between">
+                        <h3 class="section-title" id="home-tx-title">Pengeluaran Hari Ini</h3>
+                        <p class="text-sm text-muted" id="home-today-total">Rp0</p>
+                    </div>
+                    
+                    <div class="daily-status" id="home-daily-status">
+                        <i class="ph-fill ph-check-circle"></i>
+                        <span id="home-daily-msg">Aman, masih on track.</span>
+                    </div>
+
+                    <div class="transaction-list mt-4" id="home-transaction-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- CATAT VIEW -->
+            <section id="view-catat" class="view hidden">
+                <div class="top-bar">
+                    <h2>Catat Pengeluaran</h2>
+                </div>
+                
+                <div class="form-container mt-4">
+                    <div class="hero-input-group">
+                        <label>Nominal</label>
+                        <div class="hero-input">
+                            <span>Rp</span>
+                            <input type="text" inputmode="numeric" id="catat-amount" placeholder="0" oninput="app.formatInput(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label>Pengeluaran untuk apa?</label>
+                        <input type="text" id="catat-name" placeholder="Makan siang" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <div class="category-pills" id="catat-categories">
+                            <button class="cat-pill active" data-cat="Makan">Makan</button>
+                            <button class="cat-pill" data-cat="Jajan">Jajan</button>
+                            <button class="cat-pill" data-cat="Transport">Transport</button>
+                            <button class="cat-pill" data-cat="Belanja">Belanja</button>
+                            <button class="cat-pill" data-cat="Lainnya">Lainnya</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catatan (Opsional)</label>
+                        <input type="text" id="catat-note" placeholder="Misal: makan bareng teman" autocomplete="off">
+                    </div>
+
+                    <button class="btn-primary mt-6" onclick="app.saveManualTransaction()">Simpan Pengeluaran</button>
+                </div>
+            </section>
+
+            <!-- KALKULATOR VIEW -->
+            <section id="view-kalkulator" class="view hidden">
+                <div class="top-bar">
+                    <h2>Kalkulator</h2>
+                </div>
+                
+                <div class="calc-source-toggle mt-2 mb-4">
+                    <label class="radio-label">
+                        <input type="radio" name="calc-source" value="money" checked onchange="app.updateCalcDisplay()"> 
+                        <span>Sisa Uang</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="calc-source" value="budget" onchange="app.updateCalcDisplay()"> 
+                        <span>Sisa Budget</span>
+                    </label>
+                </div>
+
+                <div class="calc-container">
+                    <div class="calc-display">
+                        <p class="text-sm text-muted" id="calc-source-label">Uang tersedia</p>
+                        <h2 id="calc-available">Rp0</h2>
+                        
+                        <div class="calc-equation mt-4">
+                            <span id="calc-input">0</span>
+                        </div>
+                        
+                        <div class="calc-result mt-4">
+                            <p class="text-sm text-muted">Hasil Akhir</p>
+                            <h3 id="calc-result-money" class="text-main">Rp0</h3>
+                        </div>
+                    </div>
+
+                    <div class="calc-keypad mt-6">
+                        <button class="calc-btn" onclick="app.calcInput('1')">1</button>
+                        <button class="calc-btn" onclick="app.calcInput('2')">2</button>
+                        <button class="calc-btn" onclick="app.calcInput('3')">3</button>
+                        <button class="calc-btn op-btn" onclick="app.calcDelete()"><i class="ph ph-backspace"></i></button>
+                        
+                        <button class="calc-btn" onclick="app.calcInput('4')">4</button>
+                        <button class="calc-btn" onclick="app.calcInput('5')">5</button>
+                        <button class="calc-btn" onclick="app.calcInput('6')">6</button>
+                        <button class="calc-btn op-btn" onclick="app.calcInput('000')">000</button>
+                        
+                        <button class="calc-btn" onclick="app.calcInput('7')">7</button>
+                        <button class="calc-btn" onclick="app.calcInput('8')">8</button>
+                        <button class="calc-btn" onclick="app.calcInput('9')">9</button>
+                        <button class="calc-btn" onclick="app.calcInput('0')">0</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROFIL VIEW -->
+            <section id="view-profil" class="view hidden">
+                <div class="profile-header">
+                    <div class="avatar" id="profile-avatar">A</div>
+                    <h2 id="profile-name">Pengguna</h2>
+                </div>
+
+                <div class="section mt-6">
+                    <h3 class="section-title">Ringkasan Keuangan</h3>
+                    <div class="stats-grid mt-4">
+                        <div class="stat-box">
+                            <p class="text-xs text-muted">Total Pengeluaran</p>
+                            <p class="text-sm font-semibold mt-1" id="profile-total-spent">Rp0</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="text-xs text-muted">Rata-rata Harian</p>
+                            <p class="text-sm font-semibold mt-1" id="profile-avg-daily">Rp0</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="text-xs text-muted">Total Transaksi</p>
+                            <p class="text-sm font-semibold mt-1" id="profile-total-tx">0</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="text-xs text-muted">Sisa Budget</p>
+                            <p class="text-sm font-semibold mt-1 text-primary" id="profile-budget-left">Rp0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section mt-6">
+                    <div class="flex-between">
+                        <h3 class="section-title">Riwayat Transaksi</h3>
+                        <button class="icon-text-btn" onclick="app.exportExcel()"><i class="ph ph-file-xls"></i> Export Excel</button>
+                    </div>
+                    
+                    <div class="search-box mt-4">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="search-tx" placeholder="Cari transaksi..." onkeyup="app.searchTransactions()">
+                    </div>
+
+                    <div class="history-container mt-4" id="history-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="section mt-8 mb-8">
+                    <button class="btn-danger w-full" onclick="app.resetData()">Hapus Semua Pencatatan</button>
+                    <p class="text-xs text-muted text-center mt-2">Mulai dari awal. Data tidak bisa dikembalikan.</p>
+                </div>
+            </section>
+            
+            <!-- BOTTOM NAVIGATION -->
+            <nav id="bottom-nav">
+                <button class="nav-item active" data-target="home">
+                    <i class="ph ph-house"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" data-target="catat">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Catat</span>
+                </button>
+                <button class="nav-item" data-target="kalkulator">
+                    <i class="ph ph-calculator"></i>
+                    <span>Kalkulator</span>
+                </button>
+                <button class="nav-item" data-target="profil">
+                    <i class="ph ph-user"></i>
+                    <span>Profil</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- TOAST FEEDBACK -->
+        <div id="toast" class="toast">
+            <span id="toast-msg">Pesan</span>
+            <button id="toast-action" class="toast-action hidden">Undo</button>
+        </div>
+
+        <!-- MODAL QUICK LOG -->
+        <div id="modal-quick-log" class="modal">
+            <div class="modal-content">
+                <div class="flex-between mb-4">
+                    <h3>Edit Quick Log</h3>
+                    <button class="icon-btn" onclick="app.closeModal('modal-quick-log')"><i class="ph ph-x"></i></button>
+                </div>
+                <div id="ql-edit-list" class="ql-edit-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="mt-4 p-4" style="border: 1px dashed var(--border); border-radius: var(--radius-md); background: var(--bg-color);">
+                    <h4>Tambah Baru</h4>
+                    <input type="text" id="ql-new-name" placeholder="Nama (ex: Bensin)" class="mt-2 w-full">
+                    <div class="input-prefix mt-2">
+                        <span>Rp</span>
+                        <input type="text" inputmode="numeric" id="ql-new-amount" placeholder="20.000" oninput="app.formatInput(this)">
+                    </div>
+                    <button class="btn-primary mt-2" onclick="app.addQuickLog()">Tambah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
