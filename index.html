@@ -163,7 +163,7 @@
 
                     <div class="form-group mb-4">
                         <label>Catatan (Opsional)</label>
-                        <input type="text" id="catat-note" placeholder="Misal: makan bareng teman" autocomplete="off">
+                        <input type="text" id="catat-note" placeholder="Misal: makan bareng teman" autocomplete="off" maxlength="20">
                     </div>
 
                     <button class="btn-primary" style="margin-top: auto;" onclick="app.saveManualTransaction()">Simpan Pengeluaran</button>
@@ -225,7 +225,7 @@
             <section id="view-profil" class="view hidden">
                 <div class="profile-header flex-between">
                     <div style="display:flex; align-items:center; gap:16px;">
-                        <div class="avatar" id="profile-avatar">A</div>
+                        <div class="avatar" id="profile-avatar"></div>
                         <h2 id="profile-name">Pengguna</h2>
                     </div>
                     <!-- Theme Toggle -->
