@@ -147,7 +147,7 @@ const app = {
                 nextView.classList.remove('hidden');
                 
                 // GSAP Enter Animation
-                if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                if (false) {
                     gsap.fromTo(nextView, 
                         { opacity: 0, y: 15 }, 
                         { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
@@ -163,7 +163,7 @@ const app = {
             }
         };
 
-        if (activeView && window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (false) {
             gsap.to(activeView, {
                 opacity: 0, y: -10, duration: 0.2, ease: 'power2.in',
                 onComplete: completeTransition
@@ -385,7 +385,7 @@ const app = {
             qlContainer.appendChild(btn);
         });
         
-        if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (false) {
             gsap.to('.ql-btn', { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' });
         } else {
             document.querySelectorAll('.ql-btn').forEach(el => {
@@ -447,7 +447,7 @@ const app = {
             txList.innerHTML = html;
             
             // GSAP Stagger Entrance
-            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (false) {
                 gsap.to('.tx-item', { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: 'power2.out' });
             } else {
                 document.querySelectorAll('.tx-item').forEach(el => {
@@ -560,7 +560,7 @@ const app = {
         if (!this.state.user) return;
 
         document.getElementById('profile-name').innerText = this.state.user.name;
-        document.getElementById('profile-avatar').innerText = this.state.user.name.charAt(0).toUpperCase();
+        
 
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
