@@ -8,7 +8,7 @@ const app = {
             { id: 3, name: 'Bensin', amount: 20000, category: 'Transport', icon: 'ph-gas-pump' },
             { id: 4, name: 'Snack', amount: 10000, category: 'Jajan', icon: 'ph-cookie' }
         ],
-        theme: 'light' // light or dark
+        theme: 'light'
     },
     
     balanceVisible: true,
@@ -32,7 +32,6 @@ const app = {
         this.setupNavigation();
         this.setupCategoryPills();
         
-        // Ensure date picker is set to today on load
         document.getElementById('home-date-picker').valueAsDate = new Date();
         
         if (!this.state.user) {
@@ -90,7 +89,6 @@ const app = {
 
     // Format input as user types (auto add dots)
     formatInput(el) {
-        // Remove non-digits
         let val = el.value.replace(/\D/g, '');
         if (val !== '') {
             val = parseInt(val).toLocaleString('id-ID');
@@ -98,7 +96,6 @@ const app = {
         el.value = val;
     },
 
-    // Get raw number from formatted input
     getRawNumber(valStr) {
         if (!valStr) return 0;
         return parseInt(valStr.replace(/\./g, '')) || 0;
@@ -146,7 +143,6 @@ const app = {
             if (nextView) {
                 nextView.classList.remove('hidden');
                 
-                // GSAP Enter Animation
                 if (false) {
                     gsap.fromTo(nextView, 
                         { opacity: 0, y: 15 }, 
@@ -241,7 +237,6 @@ const app = {
         }
     },
 
-    // --- QUICK LOG EDIT ---
     renderQuickLogEdit() {
         const list = document.getElementById('ql-edit-list');
         list.innerHTML = '';
@@ -315,7 +310,6 @@ const app = {
     changeHomeDate() {
         const picker = document.getElementById('home-date-picker');
         if (picker.value) {
-            // Create date treating the value as local time
             const [y, m, d] = picker.value.split('-');
             this.selectedHomeDate = new Date(y, m - 1, d);
             this.updateHomeView();
@@ -335,7 +329,7 @@ const app = {
         const daysLeft = endOfMonth.getDate() - now.getDate();
         document.getElementById('home-days-left').innerText = `${daysLeft} hari tersisa bulan ini`;
 
-        // Money
+        // Duitduitduit
         if(this.balanceVisible) {
             document.getElementById('home-money-balance').innerText = this.formatRp(this.state.user.currentMoney);
         } else {
@@ -361,10 +355,9 @@ const app = {
         
         const pb = document.getElementById('home-budget-progress');
         pb.style.transform = `scaleX(${progressPct / 100})`;
-        // Neon colors for progress bar
-        if (progressPct >= 90) pb.style.backgroundColor = '#ef4444'; // Bright Red
-        else pb.style.backgroundColor = '#34d399'; // Neon Emerald Green
-        pb.style.boxShadow = `0 0 10px ${pb.style.backgroundColor}`; // Glow effect
+        if (progressPct >= 90) pb.style.backgroundColor = '#ef4444';
+        else pb.style.backgroundColor = '#34d399';
+        pb.style.boxShadow = `0 0 10px ${pb.style.backgroundColor}`;
 
         // Quick Logs
         const qlContainer = document.getElementById('quick-log-container');
@@ -446,7 +439,6 @@ const app = {
             });
             txList.innerHTML = html;
             
-            // GSAP Stagger Entrance
             if (false) {
                 gsap.to('.tx-item', { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: 'power2.out' });
             } else {
@@ -555,7 +547,7 @@ const app = {
         }
     },
 
-    // --- PROFIL & HISTORY VIEW ---
+    // --- PROFIL n HISTORY VIEW ---
     updateProfilView(searchTerm = '') {
         if (!this.state.user) return;
 
@@ -636,7 +628,7 @@ const app = {
                 `;
             }).join('');
 
-            // FIXED HEADER OVERLAP: Stacked Date/Count on left, Amount/Arrow on right
+            // FIXED HEADER OVERLAP
             groupEl.innerHTML = `
                 <button class="history-date-header" onclick="app.toggleHistory('${headerId}')">
                     <div class="history-date-left">
@@ -675,7 +667,7 @@ const app = {
         this.updateProfilView(term);
     },
 
-    // CSV to proper Excel/HTML format
+    // CSV
     exportExcel() {
         if (this.state.transactions.length === 0) {
             this.showToast('Tidak ada data untuk di-export');
