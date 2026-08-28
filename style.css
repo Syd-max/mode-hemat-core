@@ -1,7 +1,6 @@
 :root {
-    /* LIGHT MODE - Mode Hemat 2.0 Gen-Z Fintech */
     --bg-color: #F6F8F9;
-    --primary: #4F46E5; /* Indigo 600 */
+    --primary: #4F46E5;
     --primary-light: #EEF2FF;
     --text-main: #0F172A;
     --text-muted: #64748B;
@@ -10,7 +9,7 @@
     --border: #E2E8F0;
     --danger: #EF4444; 
     --danger-light: #FEF2F2;
-    --accent: #10B981; /* Emerald 500 */
+    --accent: #10B981;
     --card-gradient: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
     --card-text: #FFFFFF;
     --nav-bg: rgba(255, 255, 255, 0.85);
@@ -25,9 +24,8 @@
 }
 
 body.dark-mode {
-    /* DARK MODE - Night Mode */
     --bg-color: #0B0F19;
-    --primary: #818CF8; /* Indigo 400 */
+    --primary: #818CF8;
     --primary-light: rgba(129, 140, 248, 0.15);
     --text-main: #F8FAFC;
     --text-muted: #94A3B8;
@@ -127,9 +125,9 @@ h4 { font-size: 16px; font-weight: 600; }
 
 /* Layouts */
 .view {
-    padding: 24px 20px 100px 20px; /* Tighter padding for mobile */
+    padding: 24px 20px 100px 20px;
     min-height: 100vh;
-    opacity: 1; /* GSAP will handle fades */
+    opacity: 1;
 }
 .view-fixed {
     position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -138,11 +136,11 @@ h4 { font-size: 16px; font-weight: 600; }
     padding: 20px 20px 120px 20px !important;
     background-color: var(--bg-color); z-index: 50;
     height: 100vh;
-    height: 100dvh; /* Exact fit */
+    height: 100dvh;
 }
 .view-fixed .mb-4 { margin-bottom: 12px; }
 
-/* Forms & Inputs */
+/* Forms n Inputs */
 .form-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
 input[type="text"], input[type="number"], input[type="date"] {
     width: 100%; padding: 16px 18px; border: 2px solid var(--border);
@@ -274,7 +272,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-
 .tx-empty { text-align: center; padding: 48px 0; color: var(--text-muted); font-size: 15px; display: flex; flex-direction: column; align-items: center; gap: 16px;}
 .tx-empty i { font-size: 48px; color: var(--border); }
 
-/* Catat View Fixed Height */
 .form-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto !important; overflow-x: visible; min-height: 0; gap: 16px; padding-bottom: calc(32px + env(safe-area-inset-bottom, 20px)); margin-bottom: -16px;}
 .hero-input-group { background: var(--surface); padding: 16px; margin-bottom: 12px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); text-align: center; flex-shrink: 0;}
 .hero-input-group label { font-size: 14px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; display: block; }
@@ -293,7 +290,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-
 .cat-pill:hover { border-color: var(--primary-light); transform: translateY(-2px); }
 .cat-pill.active { background: var(--primary); color: #FFF; border-color: var(--primary); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
 
-/* Kalkulator View Fixed Height */
 .calc-source-toggle { display: flex; background: var(--surface); border-radius: var(--radius-full); padding: 6px; border: 1px solid var(--border); margin-bottom: 12px; flex-shrink: 0;}
 .radio-label { flex: 1; text-align: center; cursor: pointer; position: relative;}
 .radio-label input { display: none; }
@@ -348,7 +344,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-
 .history-items-wrapper.open { grid-template-rows: 1fr; }
 .history-items { overflow: hidden; }
 
-/* Bottom Nav - Floating Pill Style */
+/* Bottom Nav */
 #bottom-nav {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
     background: var(--nav-bg); 
@@ -418,7 +414,7 @@ input:focus-visible, button:focus-visible, .nav-item:focus-visible { outline: no
   }
 }
 
-/* Small Device Fit (Prevent scrolling on short screens) */
+/* Small Device Fit */
 @media (max-height: 740px) {
     .view-fixed { padding-top: 12px !important; padding-bottom: 110px !important; }
     .hero-input-group { padding: 12px; margin-bottom: 8px; }
