@@ -80,7 +80,9 @@ const app = {
 
     // --- UTILS (FORMATTING) ---
     formatRp(num) {
-        return 'Rp' + parseInt(num).toLocaleString('id-ID');
+        const parsed = parseInt(num);
+        if (parsed < 0) return '-Rp' + Math.abs(parsed).toLocaleString('id-ID');
+        return 'Rp' + parsed.toLocaleString('id-ID');
     },
     
     formatNumberStr(num) {
@@ -112,6 +114,9 @@ const app = {
         document.getElementById(id).classList.add('show');
         if (id === 'modal-quick-log') {
             this.renderQuickLogEdit();
+        } else if (id === 'modal-edit-profile') {
+            document.getElementById('ep-name').value = this.state.user.name;
+            document.getElementById('ep-budget').value = this.formatNumberStr(this.state.user.budget);
         }
     },
 
@@ -138,34 +143,17 @@ const app = {
         
         if (activeView === nextView) return;
 
-        const completeTransition = () => {
-            if (activeView) activeView.classList.add('hidden');
-            if (nextView) {
-                nextView.classList.remove('hidden');
-                
-                if (false) {
-                    gsap.fromTo(nextView, 
-                        { opacity: 0, y: 15 }, 
-                        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
-                    );
-                }
-
-                if (viewId === 'view-kalkulator') this.calcClear();
-                if (viewId === 'view-catat') {
-                    document.getElementById('catat-amount').value = '';
-                    document.getElementById('catat-name').value = '';
-                    document.getElementById('catat-note').value = '';
-                }
+        if (activeView) {
+            activeView.classList.add('hidden');
+        }
+        if (nextView) {
+            nextView.classList.remove('hidden');
+            if (viewId === 'view-kalkulator') this.calcClear();
+            if (viewId === 'view-catat') {
+                document.getElementById('catat-amount').value = '';
+                document.getElementById('catat-name').value = '';
+                document.getElementById('catat-note').value = '';
             }
-        };
-
-        if (false) {
-            gsap.to(activeView, {
-                opacity: 0, y: -10, duration: 0.2, ease: 'power2.in',
-                onComplete: completeTransition
-            });
-        } else {
-            completeTransition();
         }
     },
 
@@ -204,24 +192,29 @@ const app = {
     },
 
     // --- CORE LOGIC ---
-    addTransaction(name, amount, category, note = '') {
+    addTransaction(name, amount, category, note = '', type = 'expense') {
         const tx = {
             id: Date.now(),
             date: new Date().toISOString(),
             name,
             amount: parseInt(amount),
             category,
-            note
+            note,
+            type
         };
         
-        this.state.user.currentMoney -= tx.amount;
+        if (type === 'income') {
+            this.state.user.currentMoney += tx.amount;
+        } else {
+            this.state.user.currentMoney -= tx.amount;
+        }
         this.state.transactions.unshift(tx);
         
         // Reset selected date to today when adding a transaction so they see it
         this.selectedHomeDate = new Date();
         const datePicker = document.getElementById('home-date-picker');
         if(datePicker) datePicker.valueAsDate = this.selectedHomeDate;
-
+        
         this.saveData();
         this.showToast(`${name} dicatat`, true, tx.id);
     },
@@ -230,11 +223,42 @@ const app = {
         const index = this.state.transactions.findIndex(t => t.id === id);
         if (index > -1) {
             const tx = this.state.transactions[index];
-            this.state.user.currentMoney += tx.amount;
+            if (tx.type === 'income') {
+                this.state.user.currentMoney -= tx.amount;
+            } else {
+                this.state.user.currentMoney += tx.amount;
+            }
             this.state.transactions.splice(index, 1);
             this.saveData();
             this.showToast('Transaksi dibatalkan');
         }
+    },
+
+    saveTambahSaldo() {
+        const amount = this.getRawNumber(document.getElementById('ts-amount').value);
+        const name = document.getElementById('ts-name').value || 'Setor Saldo';
+        
+        if (amount <= 0) {
+            this.showToast('Isi nominal yang bener ge');
+            return;
+        }
+
+        this.addTransaction(name, amount, 'Income', '', 'income');
+        this.closeModal('modal-tambah-saldo');
+        document.getElementById('ts-amount').value = '';
+        document.getElementById('ts-name').value = '';
+    },
+
+    saveEditProfile() {
+        const name = document.getElementById('ep-name').value;
+        const budget = this.getRawNumber(document.getElementById('ep-budget').value);
+        
+        if (name) this.state.user.name = name;
+        if (budget > 0) this.state.user.budget = budget;
+        
+        this.saveData();
+        this.closeModal('modal-edit-profile');
+        this.showToast('Profil diperbarui');
     },
 
     renderQuickLogEdit() {
@@ -345,7 +369,8 @@ const app = {
             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
         });
         
-        const spentThisMonth = thisMonthTxs.reduce((sum, t) => sum + t.amount, 0);
+        const spentThisMonth = thisMonthTxs.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
+        const incomeThisMonth = thisMonthTxs.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         const budgetLeft = this.state.user.budget - spentThisMonth;
         const progressPct = Math.min((spentThisMonth / this.state.user.budget) * 100, 100);
 
@@ -365,8 +390,6 @@ const app = {
         this.state.quickLogs.forEach(ql => {
             const btn = document.createElement('button');
             btn.className = 'ql-btn';
-            btn.style.opacity = '0';
-            btn.style.transform = 'translateY(10px) scale(0.95)';
             btn.innerHTML = `
                 <div class="ql-icon"><i class="ph ${ql.icon}"></i></div>
                 <div class="ql-name">${ql.name}</div>
@@ -377,19 +400,11 @@ const app = {
             };
             qlContainer.appendChild(btn);
         });
-        
-        if (false) {
-            gsap.to('.ql-btn', { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' });
-        } else {
-            document.querySelectorAll('.ql-btn').forEach(el => {
-                el.style.opacity = '1'; el.style.transform = 'none';
-            });
-        }
 
         // Transactions for selected date
         const selDateStr = this.selectedHomeDate.toDateString();
         const dayTxs = this.state.transactions.filter(t => new Date(t.date).toDateString() === selDateStr);
-        const spentDay = dayTxs.reduce((sum, t) => sum + t.amount, 0);
+        const spentDay = dayTxs.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
         
         document.getElementById('home-tx-title').innerText = isToday ? 'Pengeluaran Hari Ini' : 'Pengeluaran Tanggal Ini';
         document.getElementById('home-today-total').innerText = this.formatRp(spentDay);
@@ -425,7 +440,7 @@ const app = {
                 const icon = iconMap[t.category] || 'ph-receipt';
                 
                 html += `
-                    <div class="tx-item" style="opacity: 0; transform: translateY(15px);">
+                    <div class="tx-item">
                         <div class="tx-info">
                             <div class="tx-icon"><i class="ph ${icon}"></i></div>
                             <div class="tx-details">
@@ -433,19 +448,11 @@ const app = {
                                 <p>${time} • ${t.category}</p>
                             </div>
                         </div>
-                        <div class="tx-amount">- ${this.formatRp(t.amount)}</div>
+                        <div class="tx-amount ${t.type === 'income' ? 'text-accent' : ''}">${t.type === 'income' ? '+' : '-'} ${this.formatRp(t.amount)}</div>
                     </div>
                 `;
             });
             txList.innerHTML = html;
-            
-            if (false) {
-                gsap.to('.tx-item', { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: 'power2.out' });
-            } else {
-                document.querySelectorAll('.tx-item').forEach(el => {
-                    el.style.opacity = 1; el.style.transform = 'none';
-                });
-            }
         }
     },
 
@@ -520,7 +527,7 @@ const app = {
                 const d = new Date(t.date);
                 return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
             });
-            const spentThisMonth = thisMonthTxs.reduce((sum, t) => sum + t.amount, 0);
+            const spentThisMonth = thisMonthTxs.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
             baseMoney = this.state.user.budget - spentThisMonth;
             sourceLabel.innerText = "Sisa budget bulan ini";
         }
@@ -562,7 +569,7 @@ const app = {
             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
         });
         
-        const spentThisMonth = thisMonthTxs.reduce((sum, t) => sum + t.amount, 0);
+        const spentThisMonth = thisMonthTxs.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
         const daysPassed = new Date().getDate();
         const avgDaily = Math.round(spentThisMonth / daysPassed);
         const budgetLeft = this.state.user.budget - spentThisMonth;
@@ -603,7 +610,9 @@ const app = {
         for (const [dateStr, txs] of Object.entries(grouped)) {
             const d = new Date(dateStr);
             const headerDate = this.getDateStr(d);
-            const totalDay = txs.reduce((sum, t) => sum + t.amount, 0);
+            // Calculate total spent day (expense only) or net total
+            // Let's do total spent day for display, or if there's income, show net.
+            const totalDay = txs.reduce((sum, t) => sum + (t.type === 'income' ? -t.amount : t.amount), 0);
             
             const groupEl = document.createElement('div');
             groupEl.className = 'history-group mb-4';
@@ -612,8 +621,10 @@ const app = {
             
             let itemsHtml = txs.map(t => {
                 const time = new Date(t.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                const iconMap = { 'Makan': 'ph-hamburger', 'Jajan': 'ph-ice-cream', 'Transport': 'ph-car', 'Belanja': 'ph-shopping-bag', 'Kopi': 'ph-coffee', 'Lainnya': 'ph-dots-three' };
-                const icon = iconMap[t.category] || 'ph-receipt';
+                const iconMap = { 'Makan': 'ph-hamburger', 'Jajan': 'ph-ice-cream', 'Transport': 'ph-car', 'Belanja': 'ph-shopping-bag', 'Kopi': 'ph-coffee', 'Lainnya': 'ph-dots-three', 'Income': 'ph-wallet' };
+                const icon = iconMap[t.category] || (t.type === 'income' ? 'ph-wallet' : 'ph-receipt');
+                const sign = t.type === 'income' ? '+' : '-';
+                const color = t.type === 'income' ? 'var(--accent)' : 'var(--text-main)';
                 return `
                     <div class="tx-item" style="padding: 12px 16px; margin-bottom: 8px;">
                         <div class="tx-info">
@@ -623,7 +634,7 @@ const app = {
                                 <p style="font-size:12px;">${time} • ${t.category}</p>
                             </div>
                         </div>
-                        <div class="tx-amount" style="font-size:14px;">- ${this.formatRp(t.amount)}</div>
+                        <div class="tx-amount" style="font-size:14px; color: ${color};">${sign} ${this.formatRp(t.amount)}</div>
                     </div>
                 `;
             }).join('');
@@ -686,12 +697,13 @@ const app = {
         
         this.state.transactions.forEach(t => {
             const d = new Date(t.date);
+            const sign = t.type === 'income' ? '+' : '-';
             table += `<tr>
                 <td>${d.toLocaleDateString('id-ID')}</td>
                 <td>${d.toLocaleTimeString('id-ID')}</td>
                 <td>${t.name}</td>
                 <td>${t.category}</td>
-                <td>${t.amount}</td>
+                <td>${sign}${t.amount}</td>
                 <td>${t.note || '-'}</td>
             </tr>`;
         });
