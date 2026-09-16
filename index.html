@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,42 +15,38 @@
         
         <!-- ONBOARDING VIEW -->
         <section id="view-onboarding" class="view view-fixed">
-            <div class="onboarding-bg">
-                <div class="blob blob-1"></div>
-                <div class="blob blob-2"></div>
-            </div>
-            
-            <div class="onboarding-content" style="flex: none;">
+            <div class="onboarding-content">
                 <div class="onboarding-header text-center mb-8">
-                    <div class="dk-logo-minimal">
-                        <span class="dk-letter-m d-m">d</span>
-                        <span class="dk-letter-m k-m">k</span>
+                    <div class="logo-icon mb-4">
+                        <i class="ph ph-wallet"></i>
                     </div>
                     <h1 class="logo-text">Mode Hemat</h1>
-                    <p class="tagline">"Biar uang nggak cuma lewat azza."</p>
+                    <p class="tagline text-muted mt-2">Biar uang nggak cuma numpang lewat.</p>
                 </div>
                 
                 <div class="onboarding-form" id="onboarding-step-1">
-                    <button class="btn-primary" onclick="app.nextOnboarding()">Mulai Atur Uang</button>
+                    <p class="text-center mb-6 text-sm text-main">Kelola uang dan target tabungan harian kamu dengan lebih sadar.</p>
+                    <button class="btn-primary" onclick="app.nextOnboarding()">Mulai Sekarang <i class="ph ph-arrow-right"></i></button>
                 </div>
 
                 <div class="onboarding-form hidden" id="onboarding-step-2">
+                    <h3 class="mb-4 text-center">Data Diri & Target</h3>
                     <div class="form-group mb-4">
-                        <label>Nama panggilan kamu</label>
-                        <input type="text" id="ob-name" placeholder="ex: Irsyad pacar Karina Aespa" autocomplete="off">
+                        <label>Nama / Panggilan</label>
+                        <input type="text" id="ob-name" placeholder="ex: Irsyad" autocomplete="off">
                     </div>
                     <div class="form-group mb-4">
-                        <label>Uang yang kamu pegang saat ini</label>
+                        <label>Saldo / Uang saat ini</label>
                         <div class="input-prefix">
                             <span>Rp</span>
                             <input type="text" inputmode="numeric" id="ob-money" placeholder="5.000.000" oninput="app.formatInput(this)">
                         </div>
                     </div>
                     <div class="form-group mb-4">
-                        <label>Budget pengeluaran bulan ini</label>
+                        <label>Target Pengeluaran Bulan Ini</label>
                         <div class="input-prefix">
                             <span>Rp</span>
-                            <input type="text" inputmode="numeric" id="ob-budget" placeholder="1.000.000" oninput="app.formatInput(this)">
+                            <input type="text" inputmode="numeric" id="ob-budget" placeholder="2.000.000" oninput="app.formatInput(this)">
                         </div>
                     </div>
                     <button class="btn-primary mt-2" onclick="app.finishOnboarding()">Simpan & Mulai</button>
@@ -78,7 +73,10 @@
                 <div class="main-card">
                     <div class="card-label" style="display:flex; justify-content:space-between; align-items:center;">
                         <span>Uang Kamu</span>
-                        <button onclick="app.toggleBalanceVisibility()" style="background:transparent; border:none; color:rgba(255,255,255,0.8); cursor:pointer; padding: 4px; display:flex; align-items:center; transition: transform 0.2s;"><i class="ph ph-eye" id="toggle-balance-icon" style="font-size:22px;"></i></button>
+                        <div style="display:flex; gap: 8px;">
+                            <button onclick="app.toggleBalanceVisibility()" class="card-action-btn"><i class="ph ph-eye" id="toggle-balance-icon"></i></button>
+                            <button onclick="app.openModal('modal-tambah-saldo')" class="card-action-btn"><i class="ph ph-plus-circle"></i> Tambah</button>
+                        </div>
                     </div>
                     <h1 id="home-money-balance">Rp0</h1>
                     
@@ -106,6 +104,7 @@
                         <button class="icon-text-btn" onclick="app.openModal('modal-quick-log')"><i class="ph ph-pencil-simple"></i> Edit</button>
                     </div>
                     <div class="quick-log-grid" id="quick-log-container">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
 
@@ -121,6 +120,7 @@
                     </div>
 
                     <div class="transaction-list mt-4" id="home-transaction-list">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </section>
@@ -221,8 +221,12 @@
                 <div class="profile-header flex-between">
                     <div style="display:flex; align-items:center; gap:16px;">
                         <div class="avatar" id="profile-avatar"></div>
-                        <h2 id="profile-name">Pengguna</h2>
+                        <div>
+                            <h2 id="profile-name" style="display:inline-block; margin-right:8px;">Pengguna</h2>
+                            <button class="icon-btn-small" onclick="app.openModal('modal-edit-profile')"><i class="ph ph-pencil-simple"></i></button>
+                        </div>
                     </div>
+                    <!-- Theme Toggle -->
                     <button class="icon-btn" onclick="app.toggleTheme()" id="theme-toggle"><i class="ph ph-moon"></i></button>
                 </div>
 
@@ -260,6 +264,7 @@
                     </div>
 
                     <div class="history-container mt-4" id="history-list">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
 
@@ -305,6 +310,7 @@
                 </div>
                 
                 <div id="ql-edit-list" class="ql-edit-list">
+                    <!-- Populated by JS -->
                 </div>
                 
                 <div class="mt-4 p-4" style="border: 1px dashed var(--border); border-radius: var(--radius-md); background: var(--bg-color);">
@@ -318,6 +324,50 @@
                     </div>
                     <button class="btn-primary mt-2" onclick="app.addQuickLog()">Tambah Item</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- MODAL TAMBAH SALDO -->
+        <div id="modal-tambah-saldo" class="modal">
+            <div class="modal-content">
+                <div class="flex-between mb-4">
+                    <h3>Tambah Saldo / Income</h3>
+                    <button class="icon-btn" onclick="app.closeModal('modal-tambah-saldo')"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="form-group mb-4">
+                    <label>Nominal</label>
+                    <div class="input-prefix">
+                        <span>Rp</span>
+                        <input type="text" inputmode="numeric" id="ts-amount" placeholder="100.000" oninput="app.formatInput(this)">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label>Sumber / Catatan</label>
+                    <input type="text" id="ts-name" placeholder="Setor harian / Gaji" autocomplete="off">
+                </div>
+                <button class="btn-primary" onclick="app.saveTambahSaldo()">Tambah Saldo</button>
+            </div>
+        </div>
+
+        <!-- MODAL EDIT PROFILE -->
+        <div id="modal-edit-profile" class="modal">
+            <div class="modal-content">
+                <div class="flex-between mb-4">
+                    <h3>Edit Profil & Target</h3>
+                    <button class="icon-btn" onclick="app.closeModal('modal-edit-profile')"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="form-group mb-4">
+                    <label>Nama Panggilan</label>
+                    <input type="text" id="ep-name" placeholder="Nama Kamu">
+                </div>
+                <div class="form-group mb-4">
+                    <label>Target Pengeluaran Bulan Ini</label>
+                    <div class="input-prefix">
+                        <span>Rp</span>
+                        <input type="text" inputmode="numeric" id="ep-budget" oninput="app.formatInput(this)">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="app.saveEditProfile()">Simpan Perubahan</button>
             </div>
         </div>
     </div>
